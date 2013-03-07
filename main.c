@@ -3,8 +3,9 @@
 #define FALSE 0
 
 #define MAX_VERTEX_COUNT 1000
-#define SIZE_OF_VERTEX 2
+#define SIZE_OF_VERTEX 3
 #define SIZE_OF_COLOR 3
+#define SIZE_OF_TEXCOORD 2
 
 #define GLEW_STATIC
 
@@ -49,6 +50,11 @@ char* readShaderSource(const char* shaderFile)
 	buf[statBuf.st_size] = '\0';
 	fclose(fp);
 	return buf;
+}
+
+void pushTriangle(triangle* t)
+{
+	//
 }
 
 BOOL init()
@@ -137,7 +143,7 @@ BOOL init()
 
 	glLinkProgram(myProgObj);
 	
-	//glUseProgram(myProgObj);
+	glUseProgram(myProgObj);
 
 	glClearColor(0, 0, 0, 0);
 	glViewport(0, 0, 640, 480);
@@ -146,6 +152,8 @@ BOOL init()
 	glOrtho(0, 640, 480, 0, 1, -1);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_TEXTURE_2D);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
 	glLoadIdentity();
 
 	lastTickTime = SDL_GetTicks();
@@ -169,10 +177,13 @@ void update(double delta)
 {
 	vertexArray[0] = 300.0f;
 	vertexArray[1] = 200.0f;
-        vertexArray[2] = 500.0f;
-	vertexArray[3] = 200.0f;
-	vertexArray[4] = 400.0f;
-	vertexArray[5] = 300.0f;
+	vertexArray[2] = 0.f;
+	vertexArray[3] = 500.0f;
+	vertexArray[4] = 200.0f;
+	vertexArray[5] = 0.f;
+	vertexArray[6] = 400.0f;
+	vertexArray[7] = 300.0f;
+	vertexArray[8] = 0.f;
 	colorArray[0] = 1.0f;
 	colorArray[1] = 1.0f;
 	colorArray[2] = 0.0f;
@@ -188,38 +199,12 @@ void update(double delta)
 	textureArray[3] = 0.0f;
 	textureArray[4] = 1.0f;
 	textureArray[5] = 1.0f;
-
-	
-	vertexArray[6] = 400.0f;
-	vertexArray[7] = 200.0f;
-        vertexArray[8] = 600.0f;
-	vertexArray[9] = 300.0f;
-	vertexArray[10] = 400.0f;
-	vertexArray[11] = 400.0f;
-	colorArray[9] = 0.75f;
-	colorArray[10] = 0.0f;
-	colorArray[11] = 0.0f;
-	colorArray[12] = 0.75f;
-	colorArray[13] = 0.0f;
-	colorArray[14] = 0.0f;
-	colorArray[15] = 0.75f;
-	colorArray[16] = 0.0f;
-	colorArray[17] = 0.0f;
-	textureArray[6] = 0.0f;
-	textureArray[7] = 0.0f;
-	textureArray[8] = 0.5f;
-	textureArray[9] = 0.0f;
-	textureArray[10] = 1.0f;
-	textureArray[11] = 1.0f;
 }
 
 void render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_BLEND);
 
 	//enable vertex array writing
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -229,17 +214,15 @@ void render()
 	//set the array the GPU should use
 	glVertexPointer(SIZE_OF_VERTEX, GL_FLOAT, 0, vertexArray);
 	glColorPointer(SIZE_OF_COLOR, GL_FLOAT, 0, colorArray);
-	glTexCoordPointer(SIZE_OF_VERTEX, GL_FLOAT, 0, textureArray);
+	glTexCoordPointer(SIZE_OF_TEXCOORD, GL_FLOAT, 0, textureArray);
 
 	//draw the first 8 elements as a triangle
-	glDrawArrays(GL_TRIANGLES, 0, 16);
+	glDrawArrays(GL_TRIANGLES, 0, 12);
 	
 	//disable vertex array writing
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	
-	glDisable(GL_BLEND);
 
 	SDL_GL_SwapBuffers();
 }

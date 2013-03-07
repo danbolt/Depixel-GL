@@ -14,8 +14,7 @@ typedef struct
 	GLfloat x;
 	GLfloat y;
 	GLfloat z;
-	GLfloat w;
-} vector4;
+} vector3;
 
 typedef struct
 {
@@ -29,7 +28,7 @@ typedef struct
 {
 	triangleType type;
 	color4 color;
-	vector4 a;
-	vector4 b;
-	vector4 c;
+	vector3 a;
+	vector3 b;
+	vector3 c;
 } triangle;

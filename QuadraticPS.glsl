@@ -1,3 +1,5 @@
+in float foo;
+
 void main (void)
 {
      vec2 p = gl_TexCoord[0].st;
@@ -16,6 +18,15 @@ void main (void)
      //linear alpha
      float alpha = 0.5 - sd;
      
+     if (foo < 0)
+     {
+          alpha = 1 - alpha;
+     }
+     else if (foo == 0)
+     {
+      	  alpha = 1;
+     }
+
      if (alpha > 1)
      {
           alpha = 1;
