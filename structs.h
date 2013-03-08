@@ -4,9 +4,9 @@
 
 typedef enum
 {
-	TRIANGLE,
-	CONVEX,
-	CONCAVE
+	TRIANGLE = 0,
+	CONVEX = 1,
+	CONCAVE = -1
 } triangleType;
 
 typedef struct
@@ -26,7 +26,7 @@ typedef struct
 
 typedef struct
 {
-	triangleType type;
+	GLfloat type;
 	color4 color;
 	vector3 a;
 	vector3 b;
