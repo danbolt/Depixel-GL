@@ -2,7 +2,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define MAX_VERTEX_COUNT 1000
+#define MAX_VERTEX_COUNT 5000
 #define SIZE_OF_VERTEX 3
 #define SIZE_OF_COLOR 3
 #define SIZE_OF_TEXCOORD 2
@@ -119,7 +119,7 @@ BOOL init()
 		return FALSE;
 	}
 	
-	if  ((sprite = IMG_Load("img/yoshi.png")) == NULL)
+	if  ((sprite = IMG_Load("img/yoshi.tif")) == NULL)
 	{
 		perror("error loading test PNG");
 		return FALSE;
@@ -224,65 +224,54 @@ void deinit()
 
 void update(double delta)
 {
+	int i,j;
+
 	vertexCount = 0;
 
 	triangle t;
-
 	t.type = TRIANGLE;
-	t.a.x = 120.f;
-	t.a.y = 200.f;
-	t.b.x = 420.f;
-	t.b.y = 200.f;
-	t.c.x = 280.f;
-	t.c.y = 300.f;
-	t.color.r = 1.0f;
-	t.color.g = 0.0f;
-	t.color.b = 0.0f;
-	pushTriangle(&t);
 	
-	t.type = CONVEX;
-	t.a.x = 120.f;
-	t.a.y = 200.f;
-	t.b.x = 280.f;
-	t.b.y = 100.f;
-	t.c.x = 420.f;
-	t.c.y = 200.f;
-	t.color.r = 1.0f;
-	t.color.g = 0.0f;
-	t.color.b = 1.0f;
-	pushTriangle(&t);
+	if( SDL_MUSTLOCK( sprite ) )
+	{
+		//Lock the surface
+		SDL_LockSurface( sprite );
+	}
 
-	t.type = CONCAVE;
-	t.color.r = 0.0f;
-	t.color.g = 0.0f;
-	t.color.b = 1.0f;
-	pushTriangle(&t);
+	for (i = 0; i < sprite->w; i++)
+	{
+		for (j = 0; j < sprite->h; j++)
+		{
+			Uint8 r, g, b;
+			Uint32 currentPixel = get_pixel32(sprite, i, j);
+			SDL_GetRGB(currentPixel, sprite->format, &r, &g, &b);
+			
+			t.color.r = r/255.f;
+			t.color.g = g/255.f;
+			t.color.b = b/255.f;
 
-	/*
-	vertexArray[0] = 300.0f;
-	vertexArray[1] = 200.0f;
-	vertexArray[2] = 0.f;
-	vertexArray[3] = 500.0f;
-	vertexArray[4] = 200.0f;
-	vertexArray[5] = 0.f;
-	vertexArray[6] = 400.0f;
-	vertexArray[7] = 300.0f;
-	vertexArray[8] = 0.f;
-	colorArray[0] = 1.0f;
-	colorArray[1] = 1.0f;
-	colorArray[2] = 0.0f;
-	colorArray[3] = 1.0f;
-	colorArray[4] = 1.0f;
-	colorArray[5] = 0.0f;
-	colorArray[6] = 1.0f;
-	colorArray[7] = 1.0f;
-	colorArray[8] = 0.0f;
-	textureArray[0] = 0.0f;
-	textureArray[1] = 0.0f;
-	textureArray[2] = 0.5f;
-	textureArray[3] = 0.0f;
-	textureArray[4] = 1.0f;
-	textureArray[5] = 1.0f; */
+			t.a.x = (16 * i);
+			t.a.y = (16 * j);
+			t.b.x = (16 * i) + 16;
+			t.b.y = (16 * j);
+			t.c.x = (16 * i) + 16;
+			t.c.y = (16 * j) + 16;
+			pushTriangle(&t);
+			t.a.x = (16 * i);
+			t.a.y = (16 * j);
+			t.b.x = (16 * i) + 16;
+			t.b.y = (16 * j) + 16;
+			t.c.x = (16 * i);
+			t.c.y = (16 * j) + 16;
+			pushTriangle(&t);
+
+		}
+	}
+	
+	if( SDL_MUSTLOCK( sprite ) )
+	{
+		//Lock the surface
+		SDL_UnlockSurface( sprite );
+	}
 }
 
 void render()
