@@ -15,14 +15,18 @@
 
 #include "glew.h"
 #include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 
 #include "structs.h"
+#include "pixel.h"
 
 const char* FRAGMENT_SHADER_FILENAME = "QuadraticPS.glsl";
 const char* VERTEX_SHADER_FILENAME = "QuadraticVS.glsl";
 
 SDL_Surface* screen;
 Uint32 lastTickTime;
+
+SDL_Surface* sprite;
 
 BOOL doneWindow = FALSE;
 
@@ -103,15 +107,21 @@ BOOL init()
 		return FALSE;
 	}
 
-	if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 	{
 		perror("error setting up SDL");
 		return FALSE;
 	}
 
-	if((screen = SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL)) == NULL)
+	if ((screen = SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL)) == NULL)
 	{
 		perror("error setting video mode");
+		return FALSE;
+	}
+	
+	if  ((sprite = IMG_Load("img/yoshi.png")) == NULL)
+	{
+		perror("error loading test PNG");
 		return FALSE;
 	}
 	
@@ -206,6 +216,8 @@ void deinit()
 
 	free(fSource);
 	free(vSource);
+	
+	SDL_FreeSurface(sprite);
 
 	SDL_Quit();
 }

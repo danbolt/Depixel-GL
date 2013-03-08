@@ -1,5 +1,5 @@
 compiler = -Wall -g
-objects = glew.o main.o
+objects = glew.o main.o pixel.o
 
 ifeq ($(box), win32)
 	libs = -lmingw32 -lSDLmain -lSDL -lSDL_ttf -lSDL_image -lSDL_mixer -lopengl32 -lglu32
@@ -15,6 +15,9 @@ main.o:
 	
 glew.o:
 	gcc $(compiler) -c glew.c
+	
+pixel.o:
+	gcc $(compiler) -c pixel.c
 
 clean:
 	rm $(objects)
