@@ -334,6 +334,9 @@ int main(int argc, char* argv[])
 	if (init() != TRUE)
 	{
 		perror("error initalizing SDL");
+		
+		deinit();
+
 		return 1;
 	}
 	
