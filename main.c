@@ -65,68 +65,144 @@ char* readShaderSource(const char* shaderFile)
 	return buf;
 }
 
-void createGraph()
+BOOL getCellAdjacency(int xa, int ya, int xb, int yb)
 {
-	int i,j;
-
-	if( SDL_MUSTLOCK( sprite ) )
+	if (xa - xb == 1)
 	{
-		SDL_LockSurface( sprite );
-	}
-	
-	for (i = 0; i < sprite->w; i++)
-	{
-		for (j = 0; j < sprite->h; j++)
+		if (ya - yb == 1)
 		{
-			Uint8 r, g, b;
-			Uint32 pixel = get_pixel32(sprite, i, j);
-			SDL_GetRGB(pixel, sprite->format, &r, &g, &b);
-
-			adjacencyMatrix[i][j].color.r = r/255.f;
-			adjacencyMatrix[i][j].color.g = g/255.f;
-			adjacencyMatrix[i][j].color.b = b/255.f;
-			
-			adjacencyMatrix[i][j].N = TRUE;
-			adjacencyMatrix[i][j].NE = TRUE;
-			adjacencyMatrix[i][j].NW = TRUE;
-			adjacencyMatrix[i][j].S = TRUE;
-			adjacencyMatrix[i][j].SE = TRUE;
-			adjacencyMatrix[i][j].SW = TRUE;
-			adjacencyMatrix[i][j].E = TRUE;
-			adjacencyMatrix[i][j].W = TRUE;
-			
-			if (i == 0)
+			if (adjacencyMatrix[xa][xb].NW && adjacencyMatrix[ya][yb].SE)
 			{
-				adjacencyMatrix[i][j].W = FALSE;
-				adjacencyMatrix[i][j].NW = FALSE;
-				adjacencyMatrix[i][j].SW = FALSE;
+				return TRUE;
 			}
-			if (j == 0)
+		}
+		else if (ya - yb == -1)
+		{
+			if (adjacencyMatrix[xa][xb].SW && adjacencyMatrix[ya][yb].NE)
 			{
-				adjacencyMatrix[i][j].N = FALSE;
-				adjacencyMatrix[i][j].NW = FALSE;
-				adjacencyMatrix[i][j].NE = FALSE;
+				return TRUE;
 			}
-
-			if (i >= sprite->w - 1)
+		}
+		else if (ya - yb == 0)
+		{
+			if (adjacencyMatrix[xa][xb].W && adjacencyMatrix[ya][yb].E)
 			{
-				adjacencyMatrix[i][j].E = FALSE;
-				adjacencyMatrix[i][j].NE = FALSE;
-				adjacencyMatrix[i][j].SE = FALSE;
+				return TRUE;
 			}
-			if (j >= sprite->h - 1)
+		}
+	}
+	else if (xa - xb == -1)
+	{
+		if (ya - yb == 1)
+		{
+			if (adjacencyMatrix[xa][xb].NE && adjacencyMatrix[ya][yb].SW)
 			{
-				adjacencyMatrix[i][j].S = FALSE;
-				adjacencyMatrix[i][j].SW = FALSE;
-				adjacencyMatrix[i][j].SE = FALSE;
+				return TRUE;
+			}
+		}
+		else if (ya - yb == -1)
+		{
+			if (adjacencyMatrix[xa][xb].SE && adjacencyMatrix[ya][yb].NW)
+			{
+				return TRUE;
+			}
+		}
+		else if (ya - yb == 0)
+		{
+			if (adjacencyMatrix[xa][xb].E && adjacencyMatrix[ya][yb].W)
+			{
+				return TRUE;
+			}
+		}
+	}
+	else if (xa - xb == 0)
+	{
+		if (ya - yb == 1)
+		{
+			if (adjacencyMatrix[xa][xb].N && adjacencyMatrix[ya][yb].S)
+			{
+				return TRUE;
+			}
+		}
+		else if (ya - yb == -1)
+		{
+			if (adjacencyMatrix[xa][xb].S && adjacencyMatrix[ya][yb].N)
+			{
+				return TRUE;
 			}
 		}
 	}
 	
-	if( SDL_MUSTLOCK( sprite ) )
+	return FALSE;
+}
+
+void createGraph()
+{
+	int i,j;
+
+	// make the graph fully-connected for now
 	{
-		SDL_UnlockSurface( sprite );
+		if( SDL_MUSTLOCK( sprite ) )
+		{
+			SDL_LockSurface( sprite );
+		}
+		
+		for (i = 0; i < sprite->w; i++)
+		{
+			for (j = 0; j < sprite->h; j++)
+			{
+				Uint8 r, g, b;
+				Uint32 pixel = get_pixel32(sprite, i, j);
+				SDL_GetRGB(pixel, sprite->format, &r, &g, &b);
+	
+				adjacencyMatrix[i][j].color.r = r/255.f;
+				adjacencyMatrix[i][j].color.g = g/255.f;
+				adjacencyMatrix[i][j].color.b = b/255.f;
+				
+				adjacencyMatrix[i][j].N = TRUE;
+				adjacencyMatrix[i][j].NE = TRUE;
+				adjacencyMatrix[i][j].NW = TRUE;
+				adjacencyMatrix[i][j].S = TRUE;
+				adjacencyMatrix[i][j].SE = TRUE;
+				adjacencyMatrix[i][j].SW = TRUE;
+				adjacencyMatrix[i][j].E = TRUE;
+				adjacencyMatrix[i][j].W = TRUE;
+				
+				if (i == 0)
+				{
+					adjacencyMatrix[i][j].W = FALSE;
+					adjacencyMatrix[i][j].NW = FALSE;
+					adjacencyMatrix[i][j].SW = FALSE;
+				}
+				if (j == 0)
+				{
+					adjacencyMatrix[i][j].N = FALSE;
+					adjacencyMatrix[i][j].NW = FALSE;
+					adjacencyMatrix[i][j].NE = FALSE;
+				}
+	
+				if (i >= sprite->w - 1)
+				{
+					adjacencyMatrix[i][j].E = FALSE;
+					adjacencyMatrix[i][j].NE = FALSE;
+					adjacencyMatrix[i][j].SE = FALSE;
+				}
+				if (j >= sprite->h - 1)
+				{
+					adjacencyMatrix[i][j].S = FALSE;
+					adjacencyMatrix[i][j].SW = FALSE;
+					adjacencyMatrix[i][j].SE = FALSE;
+				}
+			}
+		}
+		
+		if( SDL_MUSTLOCK( sprite ) )
+		{
+			SDL_UnlockSurface( sprite );
+		}
 	}
+	
+	//remove all diff-coloured adjacencies
 }
 
 void pushTriangle(triangle* t)
