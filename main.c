@@ -7,6 +7,8 @@
 #define SIZE_OF_COLOR 3
 #define SIZE_OF_TEXCOORD 2
 
+#define SHOW_GRAPH
+
 #define GLEW_STATIC
 
 #include <sys/stat.h>
@@ -57,6 +59,56 @@ char* readShaderSource(const char* shaderFile)
 	buf[statBuf.st_size] = '\0';
 	fclose(fp);
 	return buf;
+}
+
+void setAdjacencyValue(int w, int h, BOOL value)
+{
+	adjacencyMatrix[w][h] = value;
+}
+
+BOOL getAdjacencyValue(int w, int h)
+{
+	return adjacencyMatrix[w][h];
+}
+
+void getAdjacentNodes(int w, int h, int* adjNum, int* adjW, int* adjH)
+{
+	int i,j;
+	
+	int quantity = 0;
+	for (i = w - 1; i <= w + 1; i++)
+	{
+		for (j = h - 1; j <= h + 1; j++)
+		{
+			if (i < 0 || j < 0 || i >= sprite->w || j >= sprite->h || (i == w && j == h))
+			{
+				continue;
+			}
+			
+			if (getAdjacencyValue(i, j) == TRUE)
+			{
+				adjW[quantity] = i;
+				adjH[quantity] = j;
+				quantity++;
+			}
+		}
+	}
+	*adjNum = quantity;
+}
+
+void createGraph()
+{
+	int i, j;
+
+	for (i = 0; i < sprite->w; i++)
+	{
+		for (j = 0; j < sprite->h; j++)
+		{
+			setAdjacencyValue(i, j, TRUE);
+		}
+	}
+	
+	//
 }
 
 void pushTriangle(triangle* t)
@@ -145,7 +197,7 @@ BOOL init()
 			return FALSE;
 		}
 	}
-	
+
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
@@ -211,6 +263,7 @@ BOOL init()
 	
 	glUseProgram(myProgObj);
 
+        glPointSize(8.0f);
 	glClearColor(0, 0, 0, 0);
 	glViewport(0, 0, 640, 480);
 	glMatrixMode(GL_PROJECTION);
@@ -305,6 +358,12 @@ void update(double delta)
 
 void render()
 {
+	int i, j, q;
+	
+	int adjNum;
+	int adjW[8];
+	int adjH[8];
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
@@ -325,6 +384,34 @@ void render()
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	
+	glBegin(GL_POINTS);
+	glColor3f(1.0f, 0.0f, 1.0f);
+	for (i = 0; i < sprite->w; i++)
+	{
+		for (j = 0; j < sprite->h; j++)
+		{
+			glVertex2i(i * 16 + 8, j * 16 + 8);
+		}
+	}
+	glEnd();
+	
+	glBegin(GL_LINES);
+	glColor3f(0.0f, 0.0f, 1.0f);
+	for (i = 0; i < sprite->w; i++)
+	{
+		for (j = 0; j < sprite->h; j++)
+		{
+			getAdjacentNodes(i, j, &adjNum, adjW, adjH);
+
+			for (q = 0; q < adjNum; q++)
+			{
+				glVertex2i(i * 16 + 8, j * 16 + 8);
+				glVertex2i(adjW[q] * 16 + 8, adjH[q] * 16 + 8);
+			}
+		}
+	}
+	glEnd();
 
 	SDL_GL_SwapBuffers();
 }
@@ -339,6 +426,8 @@ int main(int argc, char* argv[])
 
 		return 1;
 	}
+	
+	createGraph();
 	
 	while (!doneWindow)
 	{
