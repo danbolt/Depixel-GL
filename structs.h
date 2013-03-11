@@ -47,10 +47,14 @@ typedef struct
 typedef struct
 {
 	color4 color;
-	BOOL up;
-	BOOL down;
-	BOOL left;
-	BOOL right;
+	BOOL N;
+	BOOL NE;
+	BOOL E;
+	BOOL SE;
+	BOOL S;
+	BOOL SW;
+	BOOL W;
+	BOOL NW;
 } AdjacencyCell;
 
 void RGB2YUV(color4* in, yuv3* out);

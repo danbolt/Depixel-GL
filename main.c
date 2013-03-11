@@ -67,17 +67,64 @@ char* readShaderSource(const char* shaderFile)
 
 void createGraph()
 {
+	int i,j;
+
 	if( SDL_MUSTLOCK( sprite ) )
 	{
-		//Lock the surface
 		SDL_LockSurface( sprite );
 	}
 	
-	//
+	for (i = 0; i < sprite->w; i++)
+	{
+		for (j = 0; j < sprite->h; j++)
+		{
+			Uint8 r, g, b;
+			Uint32 pixel = get_pixel32(sprite, i, j);
+			SDL_GetRGB(pixel, sprite->format, &r, &g, &b);
+
+			adjacencyMatrix[i][j].color.r = r/255.f;
+			adjacencyMatrix[i][j].color.g = g/255.f;
+			adjacencyMatrix[i][j].color.b = b/255.f;
+			
+			adjacencyMatrix[i][j].N = TRUE;
+			adjacencyMatrix[i][j].NE = TRUE;
+			adjacencyMatrix[i][j].NW = TRUE;
+			adjacencyMatrix[i][j].S = TRUE;
+			adjacencyMatrix[i][j].SE = TRUE;
+			adjacencyMatrix[i][j].SW = TRUE;
+			adjacencyMatrix[i][j].E = TRUE;
+			adjacencyMatrix[i][j].W = TRUE;
+			
+			if (i == 0)
+			{
+				adjacencyMatrix[i][j].W = FALSE;
+				adjacencyMatrix[i][j].NW = FALSE;
+				adjacencyMatrix[i][j].SW = FALSE;
+			}
+			if (j == 0)
+			{
+				adjacencyMatrix[i][j].N = FALSE;
+				adjacencyMatrix[i][j].NW = FALSE;
+				adjacencyMatrix[i][j].NE = FALSE;
+			}
+
+			if (i >= sprite->w - 1)
+			{
+				adjacencyMatrix[i][j].E = FALSE;
+				adjacencyMatrix[i][j].NE = FALSE;
+				adjacencyMatrix[i][j].SE = FALSE;
+			}
+			if (j >= sprite->h - 1)
+			{
+				adjacencyMatrix[i][j].S = FALSE;
+				adjacencyMatrix[i][j].SW = FALSE;
+				adjacencyMatrix[i][j].SE = FALSE;
+			}
+		}
+	}
 	
 	if( SDL_MUSTLOCK( sprite ) )
 	{
-		//Lock the surface
 		SDL_UnlockSurface( sprite );
 	}
 }
@@ -256,24 +303,14 @@ void update(double delta)
 
 	triangle t;
 	t.type = TRIANGLE;
-	
-	if( SDL_MUSTLOCK( sprite ) )
-	{
-		//Lock the surface
-		SDL_LockSurface( sprite );
-	}
 
 	for (i = 0; i < sprite->w; i++)
 	{
 		for (j = 0; j < sprite->h; j++)
 		{
-			Uint8 r, g, b;
-			Uint32 currentPixel = get_pixel32(sprite, i, j);
-			SDL_GetRGB(currentPixel, sprite->format, &r, &g, &b);
-			
-			t.color.r = r/255.f;
-			t.color.g = g/255.f;
-			t.color.b = b/255.f;
+			t.color.r = adjacencyMatrix[i][j].color.r;
+			t.color.g = adjacencyMatrix[i][j].color.g;
+			t.color.b = adjacencyMatrix[i][j].color.b;
 
 			t.a.x = (16 * i);
 			t.a.y = (16 * j);
@@ -289,21 +326,14 @@ void update(double delta)
 			t.c.x = (16 * i);
 			t.c.y = (16 * j) + 16;
 			pushTriangle(&t);
-
 		}
-	}
-	
-	if( SDL_MUSTLOCK( sprite ) )
-	{
-		//Lock the surface
-		SDL_UnlockSurface( sprite );
 	}
 }
 
 void render()
 {
 	int i,j;
-	
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
@@ -335,25 +365,63 @@ void render()
 		}
 	}
 	glEnd();
-	
-	/*
+
 	glBegin(GL_LINES);
 	glColor3f(0.0f, 0.0f, 1.0f);
 	for (i = 0; i < sprite->w; i++)
 	{
 		for (j = 0; j < sprite->h; j++)
 		{
-			//getAdjacentNodes(i, j, &adjNum, adjW, adjH);
-
-			for (q = 0; q < adjNum; q++)
+			if (adjacencyMatrix[i][j].N)
 			{
 				glVertex2i(i * 16 + 8, j * 16 + 8);
-				glVertex2i(adjW[q] * 16 + 8, adjH[q] * 16 + 8);
+				glVertex2i(i * 16 + 8, j * 16 + 8 - 16);
+			}
+			
+			if (adjacencyMatrix[i][j].NE)
+			{
+				glVertex2i(i * 16 + 8, j * 16 + 8);
+				glVertex2i(i * 16 + 8 + 16, j * 16 + 8 - 16);
+			}
+			
+			if (adjacencyMatrix[i][j].NW)
+			{
+				glVertex2i(i * 16 + 8, j * 16 + 8);
+				glVertex2i(i * 16 + 8 - 16, j * 16 + 8 - 16);
+			}
+
+			if (adjacencyMatrix[i][j].S)
+			{
+				glVertex2i(i * 16 + 8, j * 16 + 8);
+				glVertex2i(i * 16 + 8, j * 16 + 8 + 16);
+			}
+			
+			if (adjacencyMatrix[i][j].SE)
+			{
+				glVertex2i(i * 16 + 8, j * 16 + 8);
+				glVertex2i(i * 16 + 8 + 16, j * 16 + 8 + 16);
+			}
+			
+			if (adjacencyMatrix[i][j].SW)
+			{
+				glVertex2i(i * 16 + 8, j * 16 + 8);
+				glVertex2i(i * 16 + 8 - 16, j * 16 + 8 + 16);
+			}
+			
+			if (adjacencyMatrix[i][j].W)
+			{
+				glVertex2i(i * 16 + 8, j * 16 + 8);
+				glVertex2i(i * 16 + 8 - 16, j * 16 + 8);
+			}
+			
+			if (adjacencyMatrix[i][j].E)
+			{
+				glVertex2i(i * 16 + 8, j * 16 + 8);
+				glVertex2i(i * 16 + 8 + 16, j * 16 + 8);
 			}
 		}
 	}
 	glEnd();
-	*/
 
 	SDL_GL_SwapBuffers();
 }
