@@ -96,9 +96,47 @@ void getAdjacentNodes(int w, int h, int* adjNum, int* adjW, int* adjH)
 	*adjNum = quantity;
 }
 
+BOOL arePixelColorsAlike(int wa, int ha, int wb, int hb)
+{
+	const GLfloat yDiffMin = 48.f/255.f;
+	const GLfloat uDiffMin = 7./255.f;
+	const GLfloat vDiffMin = 6./255.f;
+
+	color4 node1;
+	color4 node2;
+	yuv3 node1_YUV;
+	yuv3 node2_YUV;
+
+	Uint8 r, g, b;
+
+	SDL_GetRGB(get_pixel32(sprite, wa, ha), sprite->format, &r, &g, &b);
+	node1.r = r;
+	node1.b = b;
+	node1.g = g;
+	
+	SDL_GetRGB(get_pixel32(sprite, wb, hb), sprite->format, &r, &g, &b);
+	node2.r = r;
+	node2.b = b;
+	node2.g = g;
+	
+	RGB2YUV(&node1, &node1_YUV);
+	RGB2YUV(&node2, &node2_YUV);
+
+	if (node1_YUV.y - node2_YUV.y > yDiffMin || node1_YUV.u - node2_YUV.u > uDiffMin || node1_YUV.v - node2_YUV.v > vDiffMin)
+	{
+		return FALSE;
+	}
+	
+	return TRUE;
+}
+
 void createGraph()
 {
-	int i, j;
+	int i, j, q;
+	
+	int adjNum;
+	int adjW[8];
+	int adjH[8];
 
 	for (i = 0; i < sprite->w; i++)
 	{
@@ -108,7 +146,33 @@ void createGraph()
 		}
 	}
 	
-	//
+	if( SDL_MUSTLOCK( sprite ) )
+	{
+		//Lock the surface
+		SDL_LockSurface( sprite );
+	}
+	
+	for (i = 0; i < sprite->w; i++)
+	{
+		for (j = 0; j < sprite->h; j++)
+		{
+			getAdjacentNodes(i, j, &adjNum, adjW, adjH);
+
+			for (q = 0; q < adjNum; q++)
+			{
+				if (arePixelColorsAlike(i, j, adjW[q], adjH[q]))
+				{
+					setAdjacencyValue(i, j, TRUE);
+				}
+			}
+		}
+	}
+	
+	if( SDL_MUSTLOCK( sprite ) )
+	{
+		//Lock the surface
+		SDL_UnlockSurface( sprite );
+	}
 }
 
 void pushTriangle(triangle* t)
