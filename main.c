@@ -197,6 +197,9 @@ BOOL getCellAdjacency(int xa, int ya, int xb, int yb)
 	return FALSE;
 }
 
+// team A is the edge with the negative slope
+// team B is the edge with the positive slope
+
 int curvesHeuristic(int x, int y)
 {
 	return 0;
@@ -209,18 +212,95 @@ int sparsePixelsHeuristic(int x, int y)
 
 int islandsHeuristic(int x, int y)
 {
-	return 0;
+	int teamAIslands = 0;
+	int teamBIslands = 0;
+	AdjacencyCell teamA1 = adjacencyMatrix[x][y];
+	AdjacencyCell teamA2 = adjacencyMatrix[x+1][y+1];
+	AdjacencyCell teamB1 = adjacencyMatrix[x][y+1];
+	AdjacencyCell teamB2 = adjacencyMatrix[x+1][y];
+
+	{
+		int teamA1Neighbours = 0;
+		int teamA2Neighbours = 0;
+		if (teamA1.N) { teamA1Neighbours++; }
+                if (teamA1.NE) { teamA1Neighbours++; }
+                if (teamA1.NW) { teamA1Neighbours++; }
+                if (teamA1.S) { teamA1Neighbours++; }
+                if (teamA1.SE) { teamA1Neighbours++; }
+                if (teamA1.SW) { teamA1Neighbours++; }
+                if (teamA1.E) { teamA1Neighbours++; }
+                if (teamA1.W) { teamA1Neighbours++; }
+                if (teamA1Neighbours == 1)
+                {
+			teamAIslands += 1;
+                }
+                
+                if (teamA2.N) { teamA2Neighbours++; }
+                if (teamA2.NE) { teamA2Neighbours++; }
+                if (teamA2.NW) { teamA2Neighbours++; }
+                if (teamA2.S) { teamA2Neighbours++; }
+                if (teamA2.SE) { teamA2Neighbours++; }
+                if (teamA2.SW) { teamA2Neighbours++; }
+                if (teamA2.E) { teamA2Neighbours++; }
+                if (teamA2.W) { teamA2Neighbours++; }
+                if (teamA2Neighbours == 1)
+                {
+			teamAIslands += 1;
+                }
+	}
+	{
+		int teamB1Neighbours = 0;
+		int teamB2Neighbours = 0;
+		if (teamB1.N) { teamB1Neighbours++; }
+                if (teamB1.NE) { teamB1Neighbours++; }
+                if (teamB1.NW) { teamB1Neighbours++; }
+                if (teamB1.S) { teamB1Neighbours++; }
+                if (teamB1.SE) { teamB1Neighbours++; }
+                if (teamB1.SW) { teamB1Neighbours++; }
+                if (teamB1.E) { teamB1Neighbours++; }
+                if (teamB1.W) { teamB1Neighbours++; }
+                if (teamB1Neighbours == 1)
+                {
+			teamBIslands += 1;
+                }
+		
+		if (teamB2.N) { teamB2Neighbours++; }
+                if (teamB2.NE) { teamB2Neighbours++; }
+                if (teamB2.NW) { teamB2Neighbours++; }
+                if (teamB2.S) { teamB2Neighbours++; }
+                if (teamB2.SE) { teamB2Neighbours++; }
+                if (teamB2.SW) { teamB2Neighbours++; }
+                if (teamB2.E) { teamB2Neighbours++; }
+                if (teamB2.W) { teamB2Neighbours++; }
+                if (teamB2Neighbours == 1)
+                {
+			teamBIslands += 1;
+                }
+	}
+	
+	if (teamAIslands > teamBIslands)
+	{
+		return 5;
+	}
+	else if (teamBIslands > teamAIslands)
+	{
+		return -5;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
 void weighCrossHeuristics(int x, int y)
 {
 	int weight = curvesHeuristic(x, y) + sparsePixelsHeuristic(x, y) + islandsHeuristic(x, y);
 	
-	if (weight > 0)
+	if (weight < 0)
 	{
 		setCellAdjacency(x, y, x+1, y+1, FALSE);
 	}
-	else
+	else if (weight > 0)
 	{
 		setCellAdjacency(x+1, y, x, y+1, FALSE);
 	}
@@ -344,7 +424,7 @@ void createGraph()
 		{
 			if (getCellAdjacency(i, j, i+1, j+1) && getCellAdjacency(i, j+1, i+1, j))
 			{
-				//weighCrossHeuristics(i, j);
+				weighCrossHeuristics(i, j);
 			}
 		}
 	}
