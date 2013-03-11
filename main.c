@@ -42,6 +42,8 @@ GLuint myVertObj;
 GLchar* fSource;
 GLchar* vSource;
 
+BOOL** adjacencyMatrix = NULL;
+
 // this method was found from OpenGL: A Primer by Edward Angel
 char* readShaderSource(const char* shaderFile)
 {
@@ -98,6 +100,8 @@ void pushTriangle(triangle* t)
 
 BOOL init()
 {
+	int i;
+
 	freopen( "CON", "wt", stdout );
 	//freopen( "CON", "wt", stderr );
 
@@ -123,6 +127,23 @@ BOOL init()
 	{
 		perror("error loading test PNG");
 		return FALSE;
+	}
+	
+	adjacencyMatrix = malloc(sprite->w * sizeof(BOOL*));
+	if (adjacencyMatrix == NULL)
+	{
+		perror("malloc");
+		return FALSE;
+	}
+
+	for (i = 0; i < sprite->w; i++)
+	{
+		adjacencyMatrix[i] = malloc(sprite->h * sizeof(BOOL));
+		if (adjacencyMatrix[i] == NULL)
+		{
+			perror("malloc");
+			return FALSE;
+		}
 	}
 	
 	GLenum err = glewInit();
@@ -210,9 +231,17 @@ BOOL init()
 
 void deinit()
 {
+	int i;
+
 	free(vertexArray);
 	free(colorArray);
 	free(textureArray);
+	
+	for (i = 0; i < sprite->w; i++)
+	{
+		free(adjacencyMatrix[i]);
+	}
+	free(adjacencyMatrix);
 
 	free(fSource);
 	free(vSource);
