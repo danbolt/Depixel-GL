@@ -264,26 +264,44 @@ void createGraph()
 	}
 	
 	//remove all diff-coloured adjacencies
+	for (i = 0; i < sprite->w; i++)
 	{
-		for (i = 0; i < sprite->w; i++)
+		for (j = 0; j < sprite->h; j++)
 		{
-			for (j = 0; j < sprite->h; j++)
+			int p, q;
+			
+			for (p = i - 1; p <= i + 1; p++)
 			{
-				int p, q;
-				
-				for (p = i - 1; p <= i + 1; p++)
+				for (q = j - 1; q <= j + 1; q++)
 				{
-					for (q = j - 1; q <= j + 1; q++)
+					if (i == p && j == q)
 					{
-						if (i == p && j == q)
-						{
-							continue;
-						}
-						
-						if (!arePixelColorsAlike(adjacencyMatrix[i][j].color, adjacencyMatrix[p][q].color))
-						{
-							setCellAdjacency(i, j, p, q, FALSE);
-						}
+						continue;
+					}
+					
+					if (!arePixelColorsAlike(adjacencyMatrix[i][j].color, adjacencyMatrix[p][q].color))
+					{
+						setCellAdjacency(i, j, p, q, FALSE);
+					}
+				}
+			}
+		}
+	}
+	
+	//remove all diagonals of fully connected 2x2s
+	for (i = 0; i < sprite->w - 1; i++)
+	{
+		for (j = 0; j < sprite->h - 1; j++)
+		{
+			if (getCellAdjacency(i, j, i+1, j) && getCellAdjacency(i, j+1, i+1, j+1))
+			{
+				if (getCellAdjacency(i, j, i, j+1) && getCellAdjacency(i + 1, j, i+ 1, j + 1))
+				{
+					if (getCellAdjacency(i, j, i+1, j+1) && getCellAdjacency(i, j+1, i+1, j))
+					{
+						//this 2x2 square is fully connected
+						setCellAdjacency(i, j, i+1, j+1, FALSE);
+						setCellAdjacency(i, j+1, i+1, j, FALSE);
 					}
 				}
 			}
