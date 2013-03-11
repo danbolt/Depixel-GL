@@ -71,20 +71,20 @@ void setCellAdjacency(int xa, int ya, int xb, int yb, BOOL value)
 	{
 		if (ya - yb == 1)
 		{
-			adjacencyMatrix[xa][xb].NW = value;
-			adjacencyMatrix[ya][yb].SE = value;
+			adjacencyMatrix[xa][ya].NW = value;
+			adjacencyMatrix[xb][yb].SE = value;
 			return;
 		}
 		else if (ya - yb == -1)
 		{
-			adjacencyMatrix[xa][xb].SW = value;
-			adjacencyMatrix[ya][yb].NE = value;
+			adjacencyMatrix[xa][ya].SW = value;
+			adjacencyMatrix[xb][yb].NE = value;
 			return;
 		}
 		else if (ya - yb == 0)
 		{
-			adjacencyMatrix[xa][xb].W = value;
-			adjacencyMatrix[ya][yb].E = value;
+			adjacencyMatrix[xa][ya].W = value;
+			adjacencyMatrix[xb][yb].E = value;
 			return;
 		}
 	}
@@ -92,20 +92,20 @@ void setCellAdjacency(int xa, int ya, int xb, int yb, BOOL value)
 	{
 		if (ya - yb == 1)
 		{
-			adjacencyMatrix[xa][xb].NE = value;
-			adjacencyMatrix[ya][yb].SW = value;
+			adjacencyMatrix[xa][ya].NE = value;
+			adjacencyMatrix[xb][yb].SW = value;
 			return;
 		}
 		else if (ya - yb == -1)
 		{
-			adjacencyMatrix[xa][xb].SE = value;
-			adjacencyMatrix[ya][yb].NW = value;
+			adjacencyMatrix[xa][ya].SE = value;
+			adjacencyMatrix[xb][yb].NW = value;
 			return;
 		}
 		else if (ya - yb == 0)
 		{
-			adjacencyMatrix[xa][xb].E = value;
-			adjacencyMatrix[ya][yb].W = value;
+			adjacencyMatrix[xa][ya].E = value;
+			adjacencyMatrix[xb][yb].W = value;
 			return;
 		}
 	}
@@ -113,14 +113,14 @@ void setCellAdjacency(int xa, int ya, int xb, int yb, BOOL value)
 	{
 		if (ya - yb == 1)
 		{
-			adjacencyMatrix[xa][xb].N = value;
-			adjacencyMatrix[ya][yb].S = value;
+			adjacencyMatrix[xa][ya].N = value;
+			adjacencyMatrix[xb][yb].S = value;
 			return;
 		}
 		else if (ya - yb == -1)
 		{
-			adjacencyMatrix[xa][xb].S = value;
-			adjacencyMatrix[ya][yb].N = value;
+			adjacencyMatrix[xa][ya].S = value;
+			adjacencyMatrix[xb][yb].N = value;
 			return;
 		}
 	}
@@ -132,21 +132,21 @@ BOOL getCellAdjacency(int xa, int ya, int xb, int yb)
 	{
 		if (ya - yb == 1)
 		{
-			if (adjacencyMatrix[xa][xb].NW && adjacencyMatrix[ya][yb].SE)
+			if (adjacencyMatrix[xa][ya].NW && adjacencyMatrix[xb][yb].SE)
 			{
 				return TRUE;
 			}
 		}
 		else if (ya - yb == -1)
 		{
-			if (adjacencyMatrix[xa][xb].SW && adjacencyMatrix[ya][yb].NE)
+			if (adjacencyMatrix[xa][ya].SW && adjacencyMatrix[xb][yb].NE)
 			{
 				return TRUE;
 			}
 		}
 		else if (ya - yb == 0)
 		{
-			if (adjacencyMatrix[xa][xb].W && adjacencyMatrix[ya][yb].E)
+			if (adjacencyMatrix[xa][ya].W && adjacencyMatrix[xb][yb].E)
 			{
 				return TRUE;
 			}
@@ -156,21 +156,21 @@ BOOL getCellAdjacency(int xa, int ya, int xb, int yb)
 	{
 		if (ya - yb == 1)
 		{
-			if (adjacencyMatrix[xa][xb].NE && adjacencyMatrix[ya][yb].SW)
+			if (adjacencyMatrix[xa][ya].NE && adjacencyMatrix[xb][yb].SW)
 			{
 				return TRUE;
 			}
 		}
 		else if (ya - yb == -1)
 		{
-			if (adjacencyMatrix[xa][xb].SE && adjacencyMatrix[ya][yb].NW)
+			if (adjacencyMatrix[xa][ya].SE && adjacencyMatrix[xb][yb].NW)
 			{
 				return TRUE;
 			}
 		}
 		else if (ya - yb == 0)
 		{
-			if (adjacencyMatrix[xa][xb].E && adjacencyMatrix[ya][yb].W)
+			if (adjacencyMatrix[xa][ya].E && adjacencyMatrix[xb][yb].W)
 			{
 				return TRUE;
 			}
@@ -180,14 +180,14 @@ BOOL getCellAdjacency(int xa, int ya, int xb, int yb)
 	{
 		if (ya - yb == 1)
 		{
-			if (adjacencyMatrix[xa][xb].N && adjacencyMatrix[ya][yb].S)
+			if (adjacencyMatrix[xa][ya].N && adjacencyMatrix[xb][yb].S)
 			{
 				return TRUE;
 			}
 		}
 		else if (ya - yb == -1)
 		{
-			if (adjacencyMatrix[xa][xb].S && adjacencyMatrix[ya][yb].N)
+			if (adjacencyMatrix[xa][ya].S && adjacencyMatrix[xb][yb].N)
 			{
 				return TRUE;
 			}
@@ -264,6 +264,15 @@ void createGraph()
 	}
 	
 	//remove all diff-coloured adjacencies
+	{
+		for (i = 0; i < sprite->w; i++)
+		{
+			for (j = 0; j < sprite->h; j++)
+			{
+				setCellAdjacency(i, j, i, j + 1, FALSE);
+			}
+		}
+	}
 }
 
 void pushTriangle(triangle* t)
