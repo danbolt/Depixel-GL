@@ -353,7 +353,7 @@ BOOL init()
 		return FALSE;
 	}
 	
-	if  ((sprite = IMG_Load("img/yoshi.tif")) == NULL)
+	if  ((sprite = IMG_Load("img/boo.tif")) == NULL)
 	{
 		perror("error loading test PNG");
 		return FALSE;
