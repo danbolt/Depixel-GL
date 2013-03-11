@@ -2,6 +2,10 @@
 #define GLEW_STATIC
 #include "glew.h"
 
+#define BOOL Uint8
+#define TRUE 1
+#define FALSE 0
+
 typedef enum
 {
 	TRIANGLE = 0,
@@ -40,4 +44,15 @@ typedef struct
 	vector3 c;
 } triangle;
 
+typedef struct
+{
+	color4 color;
+	BOOL up;
+	BOOL down;
+	BOOL left;
+	BOOL right;
+} AdjacencyCell;
+
 void RGB2YUV(color4* in, yuv3* out);
+
+BOOL arePixelColorsAlike(color4 node1, color4 node2);

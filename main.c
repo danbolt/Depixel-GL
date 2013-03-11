@@ -48,16 +48,7 @@ GLuint myVertObj;
 GLchar* fSource;
 GLchar* vSource;
 
-typedef struct
-{
-	color4 color;
-	BOOL up;
-	BOOL down;
-	BOOL left;
-	BOOL right;
-} AdjacencyCell;
-
-BOOL adjacencyMatrix[SNES_SCREEN_WIDTH + 1][SNES_SCREEN_HEIGHT + 1];
+AdjacencyCell adjacencyMatrix[SNES_SCREEN_WIDTH][SNES_SCREEN_HEIGHT];
 
 // this method was found from OpenGL: A Primer by Edward Angel
 char* readShaderSource(const char* shaderFile)
@@ -72,26 +63,6 @@ char* readShaderSource(const char* shaderFile)
 	buf[statBuf.st_size] = '\0';
 	fclose(fp);
 	return buf;
-}
-
-BOOL arePixelColorsAlike(color4 node1, color4 node2)
-{
-	const GLfloat yDiffMin = 48.f/255.f;
-	const GLfloat uDiffMin = 7./255.f;
-	const GLfloat vDiffMin = 6./255.f;
-
-	yuv3 node1_YUV;
-	yuv3 node2_YUV;
-	
-	RGB2YUV(&node1, &node1_YUV);
-	RGB2YUV(&node2, &node2_YUV);
-
-	if (node1_YUV.y - node2_YUV.y > yDiffMin || node1_YUV.u - node2_YUV.u > uDiffMin || node1_YUV.v - node2_YUV.v > vDiffMin)
-	{
-		return FALSE;
-	}
-	
-	return TRUE;
 }
 
 void createGraph()
@@ -152,8 +123,6 @@ void pushTriangle(triangle* t)
 
 BOOL init()
 {
-	int i;
-
 	freopen( "CON", "wt", stdout );
 	//freopen( "CON", "wt", stderr );
 
@@ -267,8 +236,6 @@ BOOL init()
 
 void deinit()
 {
-	int i;
-
 	free(vertexArray);
 	free(colorArray);
 	free(textureArray);
@@ -335,12 +302,8 @@ void update(double delta)
 
 void render()
 {
-	int i, j, q;
+	int i,j;
 	
-	int adjNum;
-	int adjW[8];
-	int adjH[8];
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
