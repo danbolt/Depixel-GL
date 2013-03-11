@@ -197,6 +197,35 @@ BOOL getCellAdjacency(int xa, int ya, int xb, int yb)
 	return FALSE;
 }
 
+int curvesHeuristic(int x, int y)
+{
+	return 0;
+}
+
+int sparsePixelsHeuristic(int x, int y)
+{
+	return 0;
+}
+
+int islandsHeuristic(int x, int y)
+{
+	return 0;
+}
+
+void weighCrossHeuristics(int x, int y)
+{
+	int weight = curvesHeuristic(x, y) + sparsePixelsHeuristic(x, y) + islandsHeuristic(x, y);
+	
+	if (weight > 0)
+	{
+		setCellAdjacency(x, y, x+1, y+1, FALSE);
+	}
+	else
+	{
+		setCellAdjacency(x+1, y, x, y+1, FALSE);
+	}
+}
+
 void createGraph()
 {
 	int i,j;
@@ -304,6 +333,18 @@ void createGraph()
 						setCellAdjacency(i, j+1, i+1, j, FALSE);
 					}
 				}
+			}
+		}
+	}
+	
+	//use heuristics to resolve remaining crossings
+	for (i = 0; i < sprite->w - 1; i++)
+	{
+		for (j = 0; j < sprite->h - 1; j++)
+		{
+			if (getCellAdjacency(i, j, i+1, j+1) && getCellAdjacency(i, j+1, i+1, j))
+			{
+				//weighCrossHeuristics(i, j);
 			}
 		}
 	}
@@ -535,6 +576,7 @@ void render()
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	
+#ifdef SHOW_GRAPH
 	glBegin(GL_POINTS);
 	glColor3f(1.0f, 0.0f, 1.0f);
 	for (i = 0; i < sprite->w; i++)
@@ -602,6 +644,8 @@ void render()
 		}
 	}
 	glEnd();
+	
+#endif
 
 	SDL_GL_SwapBuffers();
 }
