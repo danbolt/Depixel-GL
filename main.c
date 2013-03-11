@@ -269,7 +269,23 @@ void createGraph()
 		{
 			for (j = 0; j < sprite->h; j++)
 			{
-				setCellAdjacency(i, j, i, j + 1, FALSE);
+				int p, q;
+				
+				for (p = i - 1; p <= i + 1; p++)
+				{
+					for (q = j - 1; q <= j + 1; q++)
+					{
+						if (i == p && j == q)
+						{
+							continue;
+						}
+						
+						if (!arePixelColorsAlike(adjacencyMatrix[i][j].color, adjacencyMatrix[p][q].color))
+						{
+							setCellAdjacency(i, j, p, q, FALSE);
+						}
+					}
+				}
 			}
 		}
 	}
