@@ -65,6 +65,67 @@ char* readShaderSource(const char* shaderFile)
 	return buf;
 }
 
+void setCellAdjacency(int xa, int ya, int xb, int yb, BOOL value)
+{
+	if (xa - xb == 1)
+	{
+		if (ya - yb == 1)
+		{
+			adjacencyMatrix[xa][xb].NW = value;
+			adjacencyMatrix[ya][yb].SE = value;
+			return;
+		}
+		else if (ya - yb == -1)
+		{
+			adjacencyMatrix[xa][xb].SW = value;
+			adjacencyMatrix[ya][yb].NE = value;
+			return;
+		}
+		else if (ya - yb == 0)
+		{
+			adjacencyMatrix[xa][xb].W = value;
+			adjacencyMatrix[ya][yb].E = value;
+			return;
+		}
+	}
+	else if (xa - xb == -1)
+	{
+		if (ya - yb == 1)
+		{
+			adjacencyMatrix[xa][xb].NE = value;
+			adjacencyMatrix[ya][yb].SW = value;
+			return;
+		}
+		else if (ya - yb == -1)
+		{
+			adjacencyMatrix[xa][xb].SE = value;
+			adjacencyMatrix[ya][yb].NW = value;
+			return;
+		}
+		else if (ya - yb == 0)
+		{
+			adjacencyMatrix[xa][xb].E = value;
+			adjacencyMatrix[ya][yb].W = value;
+			return;
+		}
+	}
+	else if (xa - xb == 0)
+	{
+		if (ya - yb == 1)
+		{
+			adjacencyMatrix[xa][xb].N = value;
+			adjacencyMatrix[ya][yb].S = value;
+			return;
+		}
+		else if (ya - yb == -1)
+		{
+			adjacencyMatrix[xa][xb].S = value;
+			adjacencyMatrix[ya][yb].N = value;
+			return;
+		}
+	}
+}
+
 BOOL getCellAdjacency(int xa, int ya, int xb, int yb)
 {
 	if (xa - xb == 1)
