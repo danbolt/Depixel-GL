@@ -197,6 +197,23 @@ BOOL getCellAdjacency(int xa, int ya, int xb, int yb)
 	return FALSE;
 }
 
+int countCellNeighbours(int x, int y)
+{
+	AdjacencyCell cell = adjacencyMatrix[x][y];
+	int neighbours = 0;
+	
+	if (cell.N) { neighbours++; }
+	if (cell.NE) { neighbours++; }
+	if (cell.NW) { neighbours++; }
+	if (cell.S) { neighbours++; }
+	if (cell.SE) { neighbours++; }
+	if (cell.SW) { neighbours++; }
+	if (cell.E) { neighbours++; }
+	if (cell.W) { neighbours++; }
+	
+	return neighbours;
+}
+
 // team A is the edge with the negative slope
 // team B is the edge with the positive slope
 
@@ -214,68 +231,23 @@ int islandsHeuristic(int x, int y)
 {
 	int teamAIslands = 0;
 	int teamBIslands = 0;
-	AdjacencyCell teamA1 = adjacencyMatrix[x][y];
-	AdjacencyCell teamA2 = adjacencyMatrix[x+1][y+1];
-	AdjacencyCell teamB1 = adjacencyMatrix[x][y+1];
-	AdjacencyCell teamB2 = adjacencyMatrix[x+1][y];
-
+	
+	if (countCellNeighbours(x, y) == 1)
 	{
-		int teamA1Neighbours = 0;
-		int teamA2Neighbours = 0;
-		if (teamA1.N) { teamA1Neighbours++; }
-                if (teamA1.NE) { teamA1Neighbours++; }
-                if (teamA1.NW) { teamA1Neighbours++; }
-                if (teamA1.S) { teamA1Neighbours++; }
-                if (teamA1.SE) { teamA1Neighbours++; }
-                if (teamA1.SW) { teamA1Neighbours++; }
-                if (teamA1.E) { teamA1Neighbours++; }
-                if (teamA1.W) { teamA1Neighbours++; }
-                if (teamA1Neighbours == 1)
-                {
-			teamAIslands += 1;
-                }
-                
-                if (teamA2.N) { teamA2Neighbours++; }
-                if (teamA2.NE) { teamA2Neighbours++; }
-                if (teamA2.NW) { teamA2Neighbours++; }
-                if (teamA2.S) { teamA2Neighbours++; }
-                if (teamA2.SE) { teamA2Neighbours++; }
-                if (teamA2.SW) { teamA2Neighbours++; }
-                if (teamA2.E) { teamA2Neighbours++; }
-                if (teamA2.W) { teamA2Neighbours++; }
-                if (teamA2Neighbours == 1)
-                {
-			teamAIslands += 1;
-                }
+		teamAIslands += 1;
 	}
+	if (countCellNeighbours(x + 1, y + 1) == 1)
 	{
-		int teamB1Neighbours = 0;
-		int teamB2Neighbours = 0;
-		if (teamB1.N) { teamB1Neighbours++; }
-                if (teamB1.NE) { teamB1Neighbours++; }
-                if (teamB1.NW) { teamB1Neighbours++; }
-                if (teamB1.S) { teamB1Neighbours++; }
-                if (teamB1.SE) { teamB1Neighbours++; }
-                if (teamB1.SW) { teamB1Neighbours++; }
-                if (teamB1.E) { teamB1Neighbours++; }
-                if (teamB1.W) { teamB1Neighbours++; }
-                if (teamB1Neighbours == 1)
-                {
-			teamBIslands += 1;
-                }
-		
-		if (teamB2.N) { teamB2Neighbours++; }
-                if (teamB2.NE) { teamB2Neighbours++; }
-                if (teamB2.NW) { teamB2Neighbours++; }
-                if (teamB2.S) { teamB2Neighbours++; }
-                if (teamB2.SE) { teamB2Neighbours++; }
-                if (teamB2.SW) { teamB2Neighbours++; }
-                if (teamB2.E) { teamB2Neighbours++; }
-                if (teamB2.W) { teamB2Neighbours++; }
-                if (teamB2Neighbours == 1)
-                {
-			teamBIslands += 1;
-                }
+		teamAIslands += 1;
+	}
+	
+	if (countCellNeighbours(x, y+1) == 1)
+	{
+		teamBIslands += 1;
+	}
+	if (countCellNeighbours(x + 1, y) == 1)
+	{
+		teamBIslands += 1;
 	}
 	
 	if (teamAIslands > teamBIslands)
@@ -302,6 +274,11 @@ void weighCrossHeuristics(int x, int y)
 	}
 	else if (weight > 0)
 	{
+		setCellAdjacency(x+1, y, x, y+1, FALSE);
+	}
+	else
+	{
+		setCellAdjacency(x, y, x+1, y+1, FALSE);
 		setCellAdjacency(x+1, y, x, y+1, FALSE);
 	}
 }
