@@ -553,12 +553,6 @@ BOOL init()
 		perror("error setting video mode");
 		return FALSE;
 	}
-	
-	if  ((sprite = IMG_Load("img/boo.tif")) == NULL)
-	{
-		perror("error loading test PNG");
-		return FALSE;
-	}
 
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
@@ -794,12 +788,24 @@ void render()
 
 int main(int argc, char* argv[])
 {
+	if (argc < 2)
+	{
+		fprintf(stdout, "Usage: depixel-gl <tif file>\n");
+		return 0;
+	}
+
 	if (init() != TRUE)
 	{
 		perror("error initalizing SDL");
 		
 		deinit();
 
+		return 1;
+	}
+
+	if  ((sprite = IMG_Load(argv[1])) == NULL)
+	{
+		perror("error loading test PNG");
 		return 1;
 	}
 	
