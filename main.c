@@ -307,9 +307,50 @@ int curvesHeuristic(int x, int y)
 	return teamACurveLength - teamBCurveLength;
 }
 
+int recurseSparse(int region[8][8], int x, int y, int team)
+{
+	int sum = 0;
+
+	if (region[x][y] != 0)
+	{
+		return 0;
+	}
+	
+	region[x][y] = team;
+	
+	AdjacencyCell cell = adjacencyMatrix[x][y];
+	
+	if (cell.N && y != 0) { sum += recurseSparse(region, x, y-1, team); };
+	if (cell.NE && y != 0 && x != 7) { sum += recurseSparse(region, x+1, y-1, team); };
+	if (cell.NW && y != 0 && x != 0) { sum += recurseSparse(region, x-1, y-1, team); };
+	if (cell.S && y != 7) {sum += recurseSparse(region, x, y+1, team); };
+	if (cell.SE && y != 7 && x != 7) {sum += recurseSparse(region, x+1, y+1, team); };
+	if (cell.SW && y != 7 && x != 0) {sum += recurseSparse(region, x-1, y+1, team); };
+	if (cell.W && x != 0) { sum += recurseSparse(region, x-1, y, team); };
+	if (cell.E && x != 7) { sum += recurseSparse(region, x+1, y, team); };
+	
+	return sum + 1;
+}
+
 int sparsePixelsHeuristic(int x, int y)
 {
-	return 0;
+	int i,j;
+	int teamASparseCount = 0;
+	int teamBSparseCount = 0;
+	int region[8][8]; //1 indicates team A, -1 indicates team B
+
+	for (i = 0; i < 8; i++)
+	{
+		for (j = 0; j < 8; j++)
+		{
+			region[i][j] = 0;
+		}
+	}
+	
+	teamASparseCount = recurseSparse(region, x, y, 1) + recurseSparse(region, x+1, y+1, 1);
+	teamBSparseCount = recurseSparse(region, x, y+1, -1) + recurseSparse(region, x+1, y, -1);
+
+	return teamBSparseCount - teamASparseCount; //the difference is reversed so the more sparse component recieves the weight
 }
 
 int islandsHeuristic(int x, int y)
