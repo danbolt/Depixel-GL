@@ -307,27 +307,30 @@ int curvesHeuristic(int x, int y)
 	return teamACurveLength - teamBCurveLength;
 }
 
-int recurseSparse(int region[8][8], int x, int y, int team)
+int recurseSparse(int region[8][8], int x, int y, int team, int origX, int origY)
 {
 	int sum = 0;
+	
+	int regionX = x - origX + 3;
+	int regionY = y - origY + 3;
 
-	if (region[x][y] != 0)
+	if (region[regionX][regionY] != 0)
 	{
 		return 0;
 	}
 	
-	region[x][y] = team;
+	region[regionX][regionY] = team;
 	
 	AdjacencyCell cell = adjacencyMatrix[x][y];
 	
-	if (cell.N && y != 0) { sum += recurseSparse(region, x, y-1, team); };
-	if (cell.NE && y != 0 && x != 7) { sum += recurseSparse(region, x+1, y-1, team); };
-	if (cell.NW && y != 0 && x != 0) { sum += recurseSparse(region, x-1, y-1, team); };
-	if (cell.S && y != 7) {sum += recurseSparse(region, x, y+1, team); };
-	if (cell.SE && y != 7 && x != 7) {sum += recurseSparse(region, x+1, y+1, team); };
-	if (cell.SW && y != 7 && x != 0) {sum += recurseSparse(region, x-1, y+1, team); };
-	if (cell.W && x != 0) { sum += recurseSparse(region, x-1, y, team); };
-	if (cell.E && x != 7) { sum += recurseSparse(region, x+1, y, team); };
+	if (cell.N && regionY != 0) { sum += recurseSparse(region, x, y-1, team, origX, origY); };
+	if (cell.NE && regionY != 0 && regionX != 7) { sum += recurseSparse(region, x+1, y-1, team, origX, origY); };
+	if (cell.NW && regionY != 0 && regionX != 0) { sum += recurseSparse(region, x-1, y-1, team, origX, origY); };
+	if (cell.S && regionY != 7) {sum += recurseSparse(region, x, y+1, team, origX, origY); };
+	if (cell.SE && regionY != 7 && regionX != 7) {sum += recurseSparse(region, x+1, y+1, team, origX, origY); };
+	if (cell.SW && regionY != 7 && regionX != 0) {sum += recurseSparse(region, x-1, y+1, team, origX, origY); };
+	if (cell.W && regionX != 0) { sum += recurseSparse(region, x-1, y, team, origX, origY); };
+	if (cell.E && regionX != 7) { sum += recurseSparse(region, x+1, y, team, origX, origY); };
 	
 	return sum + 1;
 }
@@ -347,8 +350,8 @@ int sparsePixelsHeuristic(int x, int y)
 		}
 	}
 	
-	teamASparseCount = recurseSparse(region, x, y, 1) + recurseSparse(region, x+1, y+1, 1);
-	teamBSparseCount = recurseSparse(region, x, y+1, -1) + recurseSparse(region, x+1, y, -1);
+	teamASparseCount = recurseSparse(region, x, y, 1, x, y) + recurseSparse(region, x+1, y+1, 1, x, y);
+	teamBSparseCount = recurseSparse(region, x, y+1, -1, x, y) + recurseSparse(region, x+1, y, -1, x, y);
 
 	return teamBSparseCount - teamASparseCount; //the difference is reversed so the more sparse component recieves the weight
 }
@@ -392,6 +395,14 @@ int islandsHeuristic(int x, int y)
 
 void weighCrossHeuristics(int x, int y)
 {
+	if (x == 1 && y == 11)
+	{
+		fprintf(stdout, "status report:\n");
+		fprintf(stdout, "curves heuristic: %d\n", curvesHeuristic(x, y));
+		fprintf(stdout, "sparse heuristic: %d\n", sparsePixelsHeuristic(x, y));
+		fprintf(stdout, "islands heuristic: %d\n", islandsHeuristic(x, y));
+	}
+
 	int weight = curvesHeuristic(x, y) + sparsePixelsHeuristic(x, y) + islandsHeuristic(x, y);
 	
 	if (weight < 0)
@@ -574,7 +585,7 @@ void pushTriangle(triangle* t)
 
 BOOL init()
 {
-	freopen( "CON", "wt", stdout );
+	//freopen( "CON", "wt", stdout );
 	//freopen( "CON", "wt", stderr );
 
 	if ((vertexArray = malloc(sizeof(GLfloat) * MAX_VERTEX_COUNT * SIZE_OF_VERTEX)) == NULL || (colorArray = malloc(sizeof(GLfloat) * MAX_VERTEX_COUNT * SIZE_OF_COLOR)) == NULL || (textureArray = malloc(sizeof(GLfloat) * MAX_VERTEX_COUNT * SIZE_OF_VERTEX)) == NULL)
