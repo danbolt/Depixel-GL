@@ -594,6 +594,8 @@ BOOL init()
 		perror("error setting video mode");
 		return FALSE;
 	}
+	
+	SDL_WM_SetCaption( "Depixel-GL", NULL );
 
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
