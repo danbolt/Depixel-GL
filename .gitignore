@@ -216,3 +216,6 @@ pip-log.txt
 
 *.o
 *.exe
+
+stdout.txt
+stderr.txt
