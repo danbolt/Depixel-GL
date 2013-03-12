@@ -17,7 +17,8 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string.h> 
+#include <assert.h>
 
 #include "glew.h"
 #include <SDL/SDL.h>
@@ -215,11 +216,95 @@ int countCellNeighbours(int x, int y)
 }
 
 // team A is the edge with the negative slope
-// team B is the edge with the positive slope
+// team B is the edge with the positive slope 
+
+int recurseCurveLength(int x, int y, int prevX, int prevY, int origX, int origY)
+{
+	//assert(x != -1 && y != -1);
+
+	if (x == origX && y == origY)
+	{
+		//we've traversed a loop
+		return 0;
+	}
+
+	int neighbours = countCellNeighbours(x, y);
+	
+	if (neighbours == 1)
+	{
+		//end of the road
+		return 1;
+	}
+	else if (neighbours > 2)
+	{
+		//this is not a curve, it is now a junction
+		return 1;
+	}
+	else if (neighbours == 2)
+	{
+		AdjacencyCell cell = adjacencyMatrix[x][y];
+		
+		int nextX = -1;
+		int nextY = -1;
+		
+		if (cell.N && prevX != x)
+		{
+			nextX = x;
+			nextY = y - 1;
+		}
+		else if (cell.NE && prevY != y - 1 && prevX != x + 1)
+		{
+			nextX = x + 1;
+			nextY = y - 1;
+		}
+		else if (cell.E && prevY != y && prevX != x + 1)
+		{
+			nextX = x + 1;
+			nextY = y;
+		}
+		else if (cell.SE && prevY != y + 1 && prevX != x + 1)
+		{
+			nextX = x + 1;
+			nextY = y + 1;
+		}
+		else if (cell.S && prevY != y + 1 && prevX != x)
+		{
+			nextX = x;
+			nextY = y + 1;
+		}
+		else if (cell.SW && prevY != y + 1 && prevX != x - 1)
+		{
+			nextX = x - 1;
+			nextY = y + 1;
+		}
+		else if (cell.W && prevY != y && prevX != x - 1)
+		{
+			nextX = x - 1;
+			nextY = y;
+		}
+		else if (cell.NW && prevY != y - 1 && prevX != x - 1)
+		{
+			nextX = x - 1;
+			nextY = y - 1;
+		}
+
+		return recurseCurveLength(nextX, nextY, x, y, origX, origY) + 1;
+	}
+	
+	//should not get here!
+	//assert(neighbours > 0);
+	return 0;
+}
 
 int curvesHeuristic(int x, int y)
 {
-	return 0;
+	int teamACurveLength = 0;
+	int teamBCurveLength = 0;
+	
+	teamACurveLength = recurseCurveLength(x, y, x+1, y+1, x+1, y+1) + recurseCurveLength(x+1, y+1, x, y, x, y);
+	teamBCurveLength = recurseCurveLength(x, y+1, x+1, y, x+1, y) + recurseCurveLength(x+1, y, x, y+1, x, y+1);
+
+	return teamACurveLength - teamBCurveLength;
 }
 
 int sparsePixelsHeuristic(int x, int y)
