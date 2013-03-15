@@ -198,6 +198,32 @@ BOOL getCellAdjacency(int xa, int ya, int xb, int yb)
 	return FALSE;
 }
 
+//this is a wrapper method for getCellAdjacency(); it's written to interface with Johannes Kopf's weird if/else code
+BOOL buddy(int x, int y, int dir)
+{
+	switch (dir)
+	{
+		case 0:
+		return getCellAdjacency(x, y, x-1, y-1);
+		case 1:
+		return getCellAdjacency(x, y, x, y-1);
+		case 2:
+		return getCellAdjacency(x, y, x+1, y-1);
+		case 3:
+		return getCellAdjacency(x, y, x+1, y);
+		case 4:
+		return getCellAdjacency(x, y, x+1, y+1);
+		case 5:
+		return getCellAdjacency(x, y, x, y+1);
+		case 6:
+		return getCellAdjacency(x, y, x-1, y+1);
+		case 7:
+		return getCellAdjacency(x, y, x-1, y);
+		default:
+		return FALSE;
+	}
+}
+
 int countCellNeighbours(int x, int y)
 {
 	AdjacencyCell cell = adjacencyMatrix[x][y];
