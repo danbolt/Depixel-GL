@@ -2,7 +2,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define MAX_VERTEX_COUNT 5000
+#define MAX_VERTEX_COUNT 6000
 #define SIZE_OF_VERTEX 3
 #define SIZE_OF_COLOR 3
 #define SIZE_OF_TEXCOORD 2
@@ -17,7 +17,7 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> 
+#include <string.h>
 #include <assert.h>
 
 #include "glew.h"
@@ -506,7 +506,6 @@ void weighCrossHeuristics(int x, int y)
 void createGraph()
 {
 	int i,j;
-	int x,y;
 
 	// make the graph fully-connected for now
 	{
@@ -623,56 +622,6 @@ void createGraph()
 			if (getCellAdjacency(i, j, i+1, j+1) && getCellAdjacency(i, j+1, i+1, j))
 			{
 				weighCrossHeuristics(i, j);
-			}
-		}
-	}
-
-	for (y = 0; y < (sprite->h); y++)
-	{
-		for (x = 0; x < (sprite->w); x++)
-		{
-			//center
-			//pushEdge(x*16 + 8, y*16, x*16 + 16, y*16 + 8);
-			//pushEdge(x*16 + 16, y*16 + 8, x*16 + 8, y*16 + 16);
-			//pushEdge(x*16 + 8, y*16 + 16, x*16, y*16 + 8);
-			//pushEdge(x*16, y*16 + 8, x*16 + 8, y*16);
-			
-			//bottom left corner
-			if (x == 0 || !buddy(x-1, y, 4))
-			{
-				pushEdge(x*16, y*16 + 8, x*16, y*16 + 16);
-				pushEdge(x*16, y*16 + 16, x*16 + 8, y*16 + 16);
-			}
-			if (buddy(x, y, 6) && !buddy(x-1, y, 4))
-			{
-				pushEdge(x*16, y*16 + 8, x*16 - 8, y*16 + 16);
-				pushEdge(x*16 + 8, y*16 + 16, x*16, y*16 + 24);
-			}
-
-			//bottom right corner
-			if (x == (sprite->w - 1) || !buddy(x+1, y, 6))
-			{
-				pushEdge(x*16 + 16, y*16 + 8, x*16 + 16, y*16 + 16);
-				pushEdge(x*16 + 8, y*16 + 16, x*16 + 16, y*16 + 16);
-			}
-			if (buddy(x, y, 4) && !buddy(x+1, y, 6))
-			{
-				pushEdge(x*16 + 16, y*16 + 8, x*16 + 24, y*16 + 16);
-				pushEdge(x*16 + 8, y*16 + 16, x*16 + 16, y*16 + 24);
-			}
-
-			//top left corner
-			if (x == 0 || !buddy(x-1, y, 2))
-			{
-				pushEdge(x*16, y*16, x*16 + 8, y*16);
-				pushEdge(x*16, y*16, x*16, y*16 + 8);
-			}
-			
-			//top left corner
-			if (x == 0 || !buddy(x+1, y, 0))
-			{
-				pushEdge(x*16 + 16, y*16, x*16 + 8, y*16);
-				pushEdge(x*16 + 16, y*16, x*16 + 16, y*16 + 8);
 			}
 		}
 	}
@@ -803,35 +752,125 @@ void deinit()
 
 void update(double delta)
 {
-	int i,j;
+	int x,y;
 
 	vertexCount = 0;
 
-	triangle t;
-	t.type = TRIANGLE;
-
-	for (i = 0; i < sprite->w; i++)
+	for (y = 0; y < (sprite->h); y++)
 	{
-		for (j = 0; j < sprite->h; j++)
+		for (x = 0; x < (sprite->w); x++)
 		{
-			t.color.r = adjacencyMatrix[i][j].color.r;
-			t.color.g = adjacencyMatrix[i][j].color.g;
-			t.color.b = adjacencyMatrix[i][j].color.b;
+			triangle t;
+			t.type = TRIANGLE;
 
-			t.a.x = (16 * i);
-			t.a.y = (16 * j);
-			t.b.x = (16 * i) + 16;
-			t.b.y = (16 * j);
-			t.c.x = (16 * i) + 16;
-			t.c.y = (16 * j) + 16;
+			//center
+			t.color = adjacencyMatrix[x][y].color;
+			t.a.x = x*16;
+			t.a.y = y*16 + 8;
+			t.b.x = x*16 + 8;
+			t.b.y = y*16 + 16;
+			t.c.x = x*16 + 8;
+			t.c.y = y*16;
 			pushTriangle(&t);
-			t.a.x = (16 * i);
-			t.a.y = (16 * j);
-			t.b.x = (16 * i) + 16;
-			t.b.y = (16 * j) + 16;
-			t.c.x = (16 * i);
-			t.c.y = (16 * j) + 16;
+			t.a.x = x*16 + 8;
+			t.a.y = y*16;
+			t.b.x = x*16 + 16;
+			t.b.y = y*16 + 8;
+			t.c.x = x*16 + 8;
+			t.c.y = y*16 + 16;
 			pushTriangle(&t);
+			//pushEdge(x*16 + 8, y*16, x*16 + 16, y*16 + 8);
+			//pushEdge(x*16 + 16, y*16 + 8, x*16 + 8, y*16 + 16);
+			//pushEdge(x*16 + 8, y*16 + 16, x*16, y*16 + 8);
+			//pushEdge(x*16, y*16 + 8, x*16 + 8, y*16);
+			
+			//bottom left corner
+			if (x == 0 || !buddy(x-1, y, 4))
+			{
+				t.color = adjacencyMatrix[x][y].color;
+				t.a.x = x*16;
+				t.a.y = y*16 + 8;
+				t.b.x = x*16 + 8;
+				t.b.y = y*16 + 16;
+				t.c.x = x*16;
+				t.c.y = y*16 + 16;
+				pushTriangle(&t);
+			}
+			if (buddy(x, y, 6) && !buddy(x-1, y, 4))
+			{
+				t.color = adjacencyMatrix[x][y].color;
+				t.a.x = x*16;
+				t.a.y = y*16 + 8;
+				t.b.x = x*16 - 8;
+				t.b.y = y*16 + 16;
+				t.c.x = x*16;
+				t.c.y = y*16 + 16;
+				pushTriangle(&t);
+				t.a.x = x*16 + 8;
+				t.a.y = y*16 + 16;
+				t.b.x = x*16;
+				t.b.y = y*16 + 24;
+				t.c.x = x*16;
+				t.c.y = y*16 + 16;
+				pushTriangle(&t);
+			}
+
+			//bottom right corner
+			if (x == (sprite->w - 1) || !buddy(x+1, y, 6))
+			{
+				t.color = adjacencyMatrix[x][y].color;
+				t.a.x = x*16 + 16;
+				t.a.y = y*16 + 16;
+				t.b.x = x*16 + 8;
+				t.b.y = y*16 + 16;
+				t.c.x = x*16 + 16;
+				t.c.y = y*16 + 8;
+				pushTriangle(&t);
+			}
+			if (buddy(x, y, 4) && !buddy(x+1, y, 6))
+			{
+				t.color = adjacencyMatrix[x][y].color;
+				t.a.x = x*16 + 16;
+				t.a.y = y*16 + 8;
+				t.b.x = x*16 + 24;
+				t.b.y = y*16 + 16;
+				t.c.x = x*16 + 16;
+				t.c.y = y*16 + 16;
+				pushTriangle(&t);
+				t.a.x = x*16 + 8;
+				t.a.y = y*16 + 16;
+				t.b.x = x*16 + 16;
+				t.b.y = y*16 + 24;
+				t.c.x = x*16 + 16;
+				t.c.y = y*16 + 16;
+				pushTriangle(&t);
+			}
+
+			//top left corner
+			if (x == 0 || !buddy(x-1, y, 2))
+			{
+				t.color = adjacencyMatrix[x][y].color;
+				t.a.x = x*16;
+				t.a.y = y*16;
+				t.b.x = x*16 + 8;
+				t.b.y = y*16;
+				t.c.x = x*16;
+				t.c.y = y*16 + 8;
+				pushTriangle(&t);
+			}
+
+			//top left corner
+			if (x == 0 || !buddy(x+1, y, 0))
+			{
+				t.color = adjacencyMatrix[x][y].color;
+				t.a.x = x*16 + 16;
+				t.a.y = y*16;
+				t.b.x = x*16 + 8;
+				t.b.y = y*16;
+				t.c.x = x*16 + 16;
+				t.c.y = y*16 + 8;
+				pushTriangle(&t);
+			}
 		}
 	}
 }
