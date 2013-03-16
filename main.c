@@ -10,7 +10,7 @@
 #define SNES_SCREEN_WIDTH 512
 #define SNES_SCREEN_HEIGHT 448
 
-#define SHOW_GRAPH
+//#define SHOW_GRAPH
 
 #define GLEW_STATIC
 
@@ -61,10 +61,10 @@ void pushEdge(int x1, int y1, int x2, int y2)
 		return;
 	}
 	
-	edges[edgeCount + 0] = x1 * 2 + 1;
-	edges[edgeCount + 1] = y1 * 2 + 1;
-	edges[edgeCount + 2] = x2 * 2 + 1;
-	edges[edgeCount + 3] = y2 * 2 + 1;
+	edges[edgeCount + 0] = x1;
+	edges[edgeCount + 1] = y1;
+	edges[edgeCount + 2] = x2;
+	edges[edgeCount + 3] = y2;
 
 	edgeCount += 4;
 }
@@ -587,173 +587,56 @@ void createGraph()
 			}
 		}
 	}
-	
 
-			/*
-			 * The next bit of code is modified from an example Johannes Kopf sent me in an e-mail exchange.
-			 * I've changed a good chunk of it to suit my interfacing.
-			 */
-			// START JOHANNES CODE HERE
+	for (y = 0; y < (sprite->h); y++)
+	{
+		for (x = 0; x < (sprite->w); x++)
+		{
+			//center
+			//pushEdge(x*16 + 8, y*16, x*16 + 16, y*16 + 8);
+			//pushEdge(x*16 + 16, y*16 + 8, x*16 + 8, y*16 + 16);
+			//pushEdge(x*16 + 8, y*16 + 16, x*16, y*16 + 8);
+			//pushEdge(x*16, y*16 + 8, x*16 + 8, y*16);
 			
-			    // init edges
-    for (y = 0; y < (sprite->h); y++)
-    {
-        for (x = 0; x < (sprite->w); x++)
-        {
-            if (x == 0 ||
-                (buddy(x, y, 0) && buddy(x-1, y, 2)) ||
-                (buddy(x, y, 3) && !(buddy(x, y, 0) && !buddy(x-1, y, 1) && !buddy(x-1, y, 2)) && !(buddy(x-1, y, 2) && !buddy(x, y, 1) && !buddy(x, y, 0))) ||
-                ((buddy(x, y, 1) || buddy(x-1, y, 1)) && buddy(x, y, 0) == buddy(x-1, y, 2)) ||
-                (!buddy(x, y, 0) && !buddy(x, y, 1) && !buddy(x, y, 3) && !buddy(x-1, y, 2)))
-            {
-                pushEdge((x*8), (y*8), (x*8), (y*8+4));
-            }
+			//bottom left corner
+			if (x == 0 || !buddy(x-1, y, 4))
+			{
+				pushEdge(x*16, y*16 + 8, x*16, y*16 + 16);
+				pushEdge(x*16, y*16 + 16, x*16 + 8, y*16 + 16);
+			}
+			if (buddy(x, y, 6) && !buddy(x-1, y, 4))
+			{
+				pushEdge(x*16, y*16 + 8, x*16 - 8, y*16 + 16);
+				pushEdge(x*16 + 8, y*16 + 16, x*16, y*16 + 24);
+			}
 
-            if (x == 0 ||
-                (buddy(x, y, 5) && buddy(x-1, y, 7)) ||
-                (buddy(x, y, 3) && !(buddy(x, y, 5) && !buddy(x-1, y, 6) && !buddy(x-1, y, 7)) && !(buddy(x-1, y, 7) && !buddy(x, y, 6) && !buddy(x, y, 5))) ||
-                ((buddy(x, y, 6) || buddy(x-1, y, 6)) && buddy(x, y, 5) == buddy(x-1, y, 7)) ||
-                (!buddy(x, y, 5) && !buddy(x, y, 6) && !buddy(x, y, 3) && !buddy(x-1, y, 7)))
-            {
-                pushEdge((x*8), (y*8+4), (x*8), (y*8+8));
-            }
+			//bottom right corner
+			if (x == (sprite->w - 1) || !buddy(x+1, y, 6))
+			{
+				pushEdge(x*16 + 16, y*16 + 8, x*16 + 16, y*16 + 16);
+				pushEdge(x*16 + 8, y*16 + 16, x*16 + 16, y*16 + 16);
+			}
+			if (buddy(x, y, 4) && !buddy(x+1, y, 6))
+			{
+				pushEdge(x*16 + 16, y*16 + 8, x*16 + 24, y*16 + 16);
+				pushEdge(x*16 + 8, y*16 + 16, x*16 + 16, y*16 + 24);
+			}
 
-            if (y == 0 || 
-                (buddy(x, y, 0) && buddy(x, y-1, 5)) ||
-                (buddy(x, y, 1) && !(buddy(x, y, 0) && !buddy(x, y-1, 3) && !buddy(x, y-1, 5)) && !(buddy(x, y-1, 5) && !buddy(x, y, 3) && !buddy(x, y, 0))) ||
-                ((buddy(x, y, 3) || buddy(x, y-1, 3)) && buddy(x, y, 0) == buddy(x, y-1, 5)) ||
-                (!buddy(x, y, 0) && !buddy(x, y, 1) && !buddy(x, y, 3) && !buddy(x, y-1, 5)))
-            {
-                pushEdge((x*8), (y*8), (x*8+4), (y*8));
-            }
-
-            if (y == 0 || 
-                (buddy(x, y, 2) && buddy(x, y-1, 7)) ||
-                (buddy(x, y, 1) && !(buddy(x, y, 2) && !buddy(x, y-1, 4) && !buddy(x, y-1, 7)) && !(buddy(x, y-1, 7) && !buddy(x, y, 4) && !buddy(x, y, 2))) ||
-                ((buddy(x, y, 4) || buddy(x, y-1, 4)) && buddy(x, y, 2) == buddy(x, y-1, 7)) || 
-                (!buddy(x, y, 2) && !buddy(x, y, 1) && !buddy(x, y, 4) && !buddy(x, y-1, 7)))
-            {
-                pushEdge((x*8+4), (y*8), (x*8+8), (y*8));
-            }
-
-            //
-            // corners cut
-            //
-
-            if (x > 0 && buddy(x-1, y, 2) && !buddy(x, y, 0) && !buddy(x, y, 3) && !buddy(x, y, 1))
-            {
-                pushEdge((x*8+2), (y*8+2), (x*8+4), (y*8));
-                pushEdge((x*8+2), (y*8+2), (x*8), (y*8));
-                pushEdge((x*8+2), (y*8+2), (x*8),(y*8+4));
-            }
-
-            if (x < (sprite->w)-1 && buddy(x+1, y, 0) && !buddy(x, y, 2) && !buddy(x, y, 1) && !buddy(x, y, 4))
-            {
-                pushEdge((x*8+6),(y*8+2), (x*8+8), (y*8));
-                pushEdge((x*8+6),(y*8+2), (x*8+4), (y*8));
-                pushEdge((x*8+6),(y*8+2), (x*8+8), (y*8+4));
-            }
-
-            if (x > 0 && buddy(x-1, y, 7) && !buddy(x, y, 5) && !buddy(x, y, 3) && !buddy(x, y, 6))
-            {
-                pushEdge((x*8+2), (y*8+6), (x*8+4), (y*8+8));
-                pushEdge((x*8+2), (y*8+6), (x*8), (y*8+8));
-                pushEdge((x*8+2), (y*8+6), (x*8), (y*8+4));
-            }
-
-            if (x < (sprite->w)-1 && buddy(x+1, y, 5) && !buddy(x, y, 7) && !buddy(x, y, 6) && !buddy(x, y, 4))
-            {
-                pushEdge((x*8+6), (y*8+6), (x*8+8), (y*8+8));
-                pushEdge((x*8+6), (y*8+6), (x*8+4), (y*8+8));
-                pushEdge((x*8+6), (y*8+6), (x*8+8), (y*8+4));
-            }
-
-            //
-            // crazy corner cut through transitive connectivity
-            //
-
-            // top left
-            if (x > 0 && buddy(x, y, 3) && buddy(x-1, y, 2) && !buddy(x, y, 1) && !buddy(x, y, 0))
-            {
-                pushEdge((x*8), (y*8+2), (x*8+2),(y*8+1));
-                pushEdge((x*8+2), (y*8+1), (x*8+4),(y*8));
-                pushEdge((x*8+2), (y*8+1), (x*8),(y*8));
-                pushEdge((x*8), (y*8+2), (x*8),(y*8+4));
-            }
-
-            if (y > 0 && buddy(x, y, 1) && buddy(x, y-1, 5) && !buddy(x, y, 3) && !buddy(x, y, 0))
-            {
-                pushEdge((x*8), (y*8), (x*8+1), (y*8+2));
-                pushEdge((x*8+1), (y*8+2), (x*8), (y*8+4));
-                pushEdge((x*8+1), (y*8+2), (x*8+2), (y*8));
-                pushEdge((x*8+2), (y*8), (x*8+4), (y*8));
-            }
-
-            // bottom left
-            if (x > 0 && buddy(x, y, 3) && buddy(x-1, y, 7) && !buddy(x, y, 6) && !buddy(x, y, 5))
-            {
-                pushEdge((x*8), (y*8+6), (x*8+2), (y*8+7));
-                pushEdge((x*8+2), (y*8+7), (x*8+4), (y*8+8));
-                pushEdge((x*8+2), (y*8+7), (x*8), (y*8+8));
-                pushEdge((x*8), (y*8+6), (x*8), (y*8+4));
-            }
-
-            if (y < (sprite->h)-1 && buddy(x, y, 6) && buddy(x, y+1, 0) && !buddy(x, y, 3) && !buddy(x, y, 5))
-            {
-                pushEdge((x*8),(y*8+8), (x*8+1),(y*8+6));
-                pushEdge((x*8+1),(y*8+6), (x*8),(y*8+4));
-                pushEdge((x*8+1),(y*8+6), (x*8+2),(y*8+8));
-                pushEdge((x*8+2),(y*8+8), (x*8+4),(y*8+8));
-            }
-
-            // top right
-            if (x < (sprite->w)-1 && buddy(x, y, 4) && buddy(x+1, y, 0) && !buddy(x, y, 1) && !buddy(x, y, 2))
-            {
-                pushEdge((x*8+8), (y*8+2), (x*8+6),(y*8+1));
-                pushEdge((x*8+6), (y*8+1), (x*8+4),(y*8));
-                pushEdge((x*8+6), (y*8+1), (x*8+8),(y*8));
-                pushEdge((x*8+8), (y*8+2), (x*8+8),(y*8+4));
-            }
-
-            if (y > 0 && buddy(x, y, 1) && buddy(x, y-1, 7) && !buddy(x, y, 4) && !buddy(x, y, 2))
-            {
-                pushEdge((x*8+8),(y*8), (x*8+7),(y*8+2));
-                pushEdge((x*8+7),(y*8+2), (x*8+8),(y*8+4));
-                pushEdge((x*8+7),(y*8+2), (x*8+6),(y*8));
-                pushEdge((x*8+6),(y*8), (x*8+4),(y*8));
-            }
-
-            // bottom right
-            if (x < (sprite->w)-1 && buddy(x, y, 4) && buddy(x+1, y, 5) && !buddy(x, y, 6) && !buddy(x, y, 7))
-            {
-                pushEdge((x*8+8),(y*8+6), (x*8+6),(y*8+7));
-                pushEdge((x*8+6),(y*8+7), (x*8+4),(y*8+8));
-                pushEdge((x*8+6),(y*8+7), (x*8+8),(y*8+8));
-                pushEdge((x*8+8),(y*8+6), (x*8+8),(y*8+4));
-            }
-
-            if (y < (sprite->h)-1 && buddy(x, y, 6) && buddy(x, y+1, 2) && !buddy(x, y, 4) && !buddy(x, y, 7))
-            {
-                pushEdge((x*8+8),(y*8+8), (x*8+7),(y*8+6));
-                pushEdge((x*8+7),(y*8+6), (x*8+8),(y*8+4));
-                pushEdge((x*8+7),(y*8+6), (x*8+6),(y*8+8));
-                pushEdge((x*8+6),(y*8+8), (x*8+4),(y*8+8));
-            }
-
-            if (x == (sprite->w)-1)
-            {
-                pushEdge((x*8+8), (y*8), (x*8+8), (y*8+8));
-            }
-
-            if (y == (sprite->h)-1)
-            {
-                pushEdge((x*8), (y*8+8), (x*8+8), (y*8+8));
-            }
-        }
-    }
-
-
-			/// END JOHANNES CODE HERE
+			//top left corner
+			if (x == 0 || !buddy(x-1, y, 2))
+			{
+				pushEdge(x*16, y*16, x*16 + 8, y*16);
+				pushEdge(x*16, y*16, x*16, y*16 + 8);
+			}
+			
+			//top left corner
+			if (x == 0 || !buddy(x+1, y, 0))
+			{
+				pushEdge(x*16 + 16, y*16, x*16 + 8, y*16);
+				pushEdge(x*16 + 16, y*16, x*16 + 16, y*16 + 8);
+			}
+		}
+	}
 }
 
 void pushTriangle(triangle* t)
@@ -896,7 +779,7 @@ BOOL init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 	glLoadIdentity();
-	
+
 	vertexCount = 0;
 
 	lastTickTime = SDL_GetTicks();
