@@ -69,6 +69,45 @@ void pushEdge(int x1, int y1, int x2, int y2)
 	edgeCount += 4;
 }
 
+void pushTriangle(triangle* t)
+{
+	if (vertexCount >= MAX_VERTEX_COUNT)
+	{
+		return;
+	}
+
+	GLfloat z = (t->type == CONCAVE) ? -1.f : ((t->type == CONVEX) ? 1.f : 0.f);
+
+	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 0] = t->a.x;
+	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 1] = t->a.y;
+	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 2] = z;
+	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 3] = t->b.x;
+	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 4] = t->b.y;
+	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 5] = z;
+	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 6] = t->c.x;
+	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 7] = t->c.y;
+	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 8] = z;
+	
+	colorArray[(vertexCount * SIZE_OF_COLOR) + 0] = t->color.r;
+	colorArray[(vertexCount * SIZE_OF_COLOR) + 1] = t->color.g;
+	colorArray[(vertexCount * SIZE_OF_COLOR) + 2] = t->color.b;
+        colorArray[(vertexCount * SIZE_OF_COLOR) + 3] = t->color.r;
+	colorArray[(vertexCount * SIZE_OF_COLOR) + 4] = t->color.g;
+	colorArray[(vertexCount * SIZE_OF_COLOR) + 5] = t->color.b;
+	colorArray[(vertexCount * SIZE_OF_COLOR) + 6] = t->color.r;
+	colorArray[(vertexCount * SIZE_OF_COLOR) + 7] = t->color.g;
+	colorArray[(vertexCount * SIZE_OF_COLOR) + 8] = t->color.b;
+
+	textureArray[(vertexCount * SIZE_OF_TEXCOORD) + 0] = 0.0f;
+        textureArray[(vertexCount * SIZE_OF_TEXCOORD) + 1] = 0.0f;
+	textureArray[(vertexCount * SIZE_OF_TEXCOORD) + 2] = 0.5f;
+	textureArray[(vertexCount * SIZE_OF_TEXCOORD) + 3] = 0.0f;
+	textureArray[(vertexCount * SIZE_OF_TEXCOORD) + 4] = 1.0f;
+	textureArray[(vertexCount * SIZE_OF_TEXCOORD) + 5] = 1.0f;
+
+	vertexCount += 3;
+}
+
 // this method was found from OpenGL: A Primer by Edward Angel
 char* readShaderSource(const char* shaderFile)
 {
@@ -637,45 +676,6 @@ void createGraph()
 			}
 		}
 	}
-}
-
-void pushTriangle(triangle* t)
-{
-	if (vertexCount >= MAX_VERTEX_COUNT)
-	{
-		return;
-	}
-
-	GLfloat z = (t->type == CONCAVE) ? -1.f : ((t->type == CONVEX) ? 1.f : 0.f);
-
-	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 0] = t->a.x;
-	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 1] = t->a.y;
-	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 2] = z;
-	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 3] = t->b.x;
-	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 4] = t->b.y;
-	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 5] = z;
-	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 6] = t->c.x;
-	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 7] = t->c.y;
-	vertexArray[(vertexCount * SIZE_OF_VERTEX) + 8] = z;
-	
-	colorArray[(vertexCount * SIZE_OF_COLOR) + 0] = t->color.r;
-	colorArray[(vertexCount * SIZE_OF_COLOR) + 1] = t->color.g;
-	colorArray[(vertexCount * SIZE_OF_COLOR) + 2] = t->color.b;
-        colorArray[(vertexCount * SIZE_OF_COLOR) + 3] = t->color.r;
-	colorArray[(vertexCount * SIZE_OF_COLOR) + 4] = t->color.g;
-	colorArray[(vertexCount * SIZE_OF_COLOR) + 5] = t->color.b;
-	colorArray[(vertexCount * SIZE_OF_COLOR) + 6] = t->color.r;
-	colorArray[(vertexCount * SIZE_OF_COLOR) + 7] = t->color.g;
-	colorArray[(vertexCount * SIZE_OF_COLOR) + 8] = t->color.b;
-
-	textureArray[(vertexCount * SIZE_OF_TEXCOORD) + 0] = 0.0f;
-        textureArray[(vertexCount * SIZE_OF_TEXCOORD) + 1] = 0.0f;
-	textureArray[(vertexCount * SIZE_OF_TEXCOORD) + 2] = 0.5f;
-	textureArray[(vertexCount * SIZE_OF_TEXCOORD) + 3] = 0.0f;
-	textureArray[(vertexCount * SIZE_OF_TEXCOORD) + 4] = 1.0f;
-	textureArray[(vertexCount * SIZE_OF_TEXCOORD) + 5] = 1.0f;
-
-	vertexCount += 3;
 }
 
 BOOL init()
