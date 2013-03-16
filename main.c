@@ -10,7 +10,7 @@
 #define SNES_SCREEN_WIDTH 512
 #define SNES_SCREEN_HEIGHT 448
 
-//#define SHOW_GRAPH
+#define SHOW_GRAPH
 
 #define GLEW_STATIC
 
@@ -61,10 +61,10 @@ void pushEdge(int x1, int y1, int x2, int y2)
 		return;
 	}
 	
-	edges[edgeCount + 0] = x1 * 2;
-	edges[edgeCount + 1] = y1 * 2;
-	edges[edgeCount + 2] = x2 * 2;
-	edges[edgeCount + 3] = y2 * 2;
+	edges[edgeCount + 0] = x1 * 2 + 1;
+	edges[edgeCount + 1] = y1 * 2 + 1;
+	edges[edgeCount + 2] = x2 * 2 + 1;
+	edges[edgeCount + 3] = y2 * 2 + 1;
 
 	edgeCount += 4;
 }
@@ -977,15 +977,7 @@ void render()
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	
-	glBegin(GL_LINES);
-	glColor3f(0.0f, 0.0f, 1.0f);
-	for (i = 0; i < edgeCount; i+= 2)
-	{
-		glVertex2i(edges[i], edges[i+1]);
-	}
-	glEnd();
-	
+
 #ifdef SHOW_GRAPH
 	glBegin(GL_POINTS);
 	glColor3f(1.0f, 0.0f, 1.0f);
@@ -1056,6 +1048,14 @@ void render()
 	glEnd();
 	
 #endif
+
+	glBegin(GL_LINES);
+	glColor3f(0.56f, 0.56f, 0.0f);
+	for (i = 0; i < edgeCount; i+= 2)
+	{
+		glVertex2i(edges[i], edges[i+1]);
+	}
+	glEnd();
 
 	SDL_GL_SwapBuffers();
 }
