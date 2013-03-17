@@ -2,7 +2,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define MAX_VERTEX_COUNT 6000
+#define MAX_VERTEX_COUNT 5000
 #define SIZE_OF_VERTEX 3
 #define SIZE_OF_COLOR 3
 #define SIZE_OF_TEXCOORD 2
