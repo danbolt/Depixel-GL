@@ -2,7 +2,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define MAX_VERTEX_COUNT 5000
+#define MAX_VERTEX_COUNT 10000 * 1024
 #define SIZE_OF_VERTEX 3
 #define SIZE_OF_COLOR 3
 #define SIZE_OF_TEXCOORD 2
@@ -50,24 +50,6 @@ GLchar* fSource;
 GLchar* vSource;
 
 AdjacencyCell adjacencyMatrix[SNES_SCREEN_WIDTH][SNES_SCREEN_HEIGHT];
-
-int edges[MAX_VERTEX_COUNT * 4];
-int edgeCount = 0;
-
-void pushEdge(int x1, int y1, int x2, int y2)
-{
-	if (edgeCount >= MAX_VERTEX_COUNT * 4)
-	{
-		return;
-	}
-	
-	edges[edgeCount + 0] = x1;
-	edges[edgeCount + 1] = y1;
-	edges[edgeCount + 2] = x2;
-	edges[edgeCount + 3] = y2;
-
-	edgeCount += 4;
-}
 
 void pushTriangle(triangle* t)
 {
@@ -632,9 +614,21 @@ BOOL init()
 	//freopen( "CON", "wt", stdout );
 	//freopen( "CON", "wt", stderr );
 
-	if ((vertexArray = malloc(sizeof(GLfloat) * MAX_VERTEX_COUNT * SIZE_OF_VERTEX)) == NULL || (colorArray = malloc(sizeof(GLfloat) * MAX_VERTEX_COUNT * SIZE_OF_COLOR)) == NULL || (textureArray = malloc(sizeof(GLfloat) * MAX_VERTEX_COUNT * SIZE_OF_VERTEX)) == NULL)
+	if ((vertexArray = malloc(sizeof(GLfloat) * MAX_VERTEX_COUNT * SIZE_OF_VERTEX)) == NULL)
 	{
 		perror("error allociating vertex arrays");
+		return FALSE;
+	}
+	
+	if ((colorArray = malloc(sizeof(GLfloat) * MAX_VERTEX_COUNT * SIZE_OF_COLOR)) == NULL)
+	{
+		perror("error allocating vertex arrays");
+		return FALSE;
+	}
+	
+	if ((textureArray = malloc(sizeof(GLfloat) * MAX_VERTEX_COUNT * SIZE_OF_VERTEX)) == NULL)
+	{
+		perror("error allocating texture arrays");
 		return FALSE;
 	}
 
@@ -714,8 +708,8 @@ BOOL init()
 	}
 
 	glLinkProgram(myProgObj);
-	
-	glUseProgram(myProgObj);
+
+	glUseProgram(myProgObj);  
 
         glPointSize(8.0f);
 	glClearColor(0, 0, 0, 0);
@@ -779,10 +773,6 @@ void update(double delta)
 			t.c.x = x*16 + 8;
 			t.c.y = y*16 + 16;
 			pushTriangle(&t);
-			//pushEdge(x*16 + 8, y*16, x*16 + 16, y*16 + 8);
-			//pushEdge(x*16 + 16, y*16 + 8, x*16 + 8, y*16 + 16);
-			//pushEdge(x*16 + 8, y*16 + 16, x*16, y*16 + 8);
-			//pushEdge(x*16, y*16 + 8, x*16 + 8, y*16);
 			
 			//bottom left corner
 			if (x == 0 || !buddy(x-1, y, 4))
@@ -971,14 +961,6 @@ void render()
 	
 #endif
 
-	glBegin(GL_LINES);
-	glColor3f(0.56f, 0.56f, 0.0f);
-	for (i = 0; i < edgeCount; i+= 2)
-	{
-		glVertex2i(edges[i], edges[i+1]);
-	}
-	glEnd();
-
 	SDL_GL_SwapBuffers();
 }
 
@@ -991,9 +973,7 @@ int main(int argc, char* argv[])
 	}
 
 	if (init() != TRUE)
-	{
-		perror("error initalizing SDL");
-		
+	{	
 		deinit();
 
 		return 1;
