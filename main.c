@@ -7,6 +7,9 @@
 #define SIZE_OF_COLOR 3
 #define SIZE_OF_TEXCOORD 2
 
+#define APPLICATION_SCREEN_WIDTH 640
+#define APPLICATION_SCREEN_HEIGHT 480
+
 #define SNES_SCREEN_WIDTH 640
 #define SNES_SCREEN_HEIGHT 480
 
@@ -48,6 +51,13 @@ GLuint myFragObj;
 GLuint myVertObj;
 GLchar* fSource;
 GLchar* vSource;
+
+GLint scaleUniform;
+GLfloat scale = 1.0f;
+
+GLint translateUniform;
+GLfloat translateX = 0.0f;
+GLfloat translateY = 0.0f;
 
 AdjacencyCell adjacencyMatrix[SNES_SCREEN_WIDTH][SNES_SCREEN_HEIGHT];
 
@@ -460,14 +470,6 @@ int islandsHeuristic(int x, int y)
 
 void weighCrossHeuristics(int x, int y)
 {
-	if (x == 1 && y == 11)
-	{
-		fprintf(stdout, "status report:\n");
-		fprintf(stdout, "curves heuristic: %d\n", curvesHeuristic(x, y));
-		fprintf(stdout, "sparse heuristic: %d\n", sparsePixelsHeuristic(x, y));
-		fprintf(stdout, "islands heuristic: %d\n", islandsHeuristic(x, y));
-	}
-
 	int weight = curvesHeuristic(x, y) + sparsePixelsHeuristic(x, y) + islandsHeuristic(x, y);
 	
 	if (weight < 0)
@@ -638,7 +640,7 @@ BOOL init()
 		return FALSE;
 	}
 
-	if ((screen = SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL)) == NULL)
+	if ((screen = SDL_SetVideoMode(APPLICATION_SCREEN_WIDTH, APPLICATION_SCREEN_HEIGHT, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_OPENGL)) == NULL)
 	{
 		perror("error setting video mode");
 		return FALSE;
@@ -710,13 +712,17 @@ BOOL init()
 	glLinkProgram(myProgObj);
 
 	glUseProgram(myProgObj);  
+	
+	scaleUniform = glGetUniformLocation(myProgObj, "scale");
+	
+	translateUniform = glGetUniformLocation(myProgObj, "translate");
 
         glPointSize(8.0f);
 	glClearColor(0, 0, 0, 0);
-	glViewport(0, 0, 640, 480);
+	glViewport(0, 0, APPLICATION_SCREEN_WIDTH, APPLICATION_SCREEN_HEIGHT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0, 640, 480, 0, 1, -1);
+	glOrtho(0, APPLICATION_SCREEN_WIDTH, APPLICATION_SCREEN_HEIGHT, 0, 1, -1);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -758,6 +764,18 @@ void update(double delta)
 	int x,y;
 
 	vertexCount = 0;
+
+	if (sprite->w > sprite->h)
+	{
+		scale = APPLICATION_SCREEN_WIDTH/((sprite->w)*16.f);
+	}
+	else
+	{
+		scale = APPLICATION_SCREEN_HEIGHT/((sprite->h)*16.f);
+	}
+
+	translateX = ((APPLICATION_SCREEN_WIDTH - (sprite->w)*16.f))/APPLICATION_SCREEN_WIDTH;
+	translateY = -1.f * ((APPLICATION_SCREEN_HEIGHT - (sprite->h)*16.f))/APPLICATION_SCREEN_HEIGHT;
 
 	for (y = 0; y < (sprite->h); y++)
 	{
@@ -877,6 +895,9 @@ void update(double delta)
 void render()
 {
 	int i,j;
+
+	glUniform1f(scaleUniform, scale);
+	glUniform2f(translateUniform, translateX, translateY);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
