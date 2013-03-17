@@ -7,8 +7,8 @@
 #define SIZE_OF_COLOR 3
 #define SIZE_OF_TEXCOORD 2
 
-#define SNES_SCREEN_WIDTH 512
-#define SNES_SCREEN_HEIGHT 448
+#define SNES_SCREEN_WIDTH 640
+#define SNES_SCREEN_HEIGHT 480
 
 //#define SHOW_GRAPH
 
@@ -1001,7 +1001,7 @@ int main(int argc, char* argv[])
 
 	if  ((sprite = IMG_Load(argv[1])) == NULL)
 	{
-		perror("error loading test PNG");
+		perror("error loading test TIF");
 		return 1;
 	}
 	
