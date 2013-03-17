@@ -739,6 +739,15 @@ void deinit()
 	free(fSource);
 	free(vSource);
 	
+	glUseProgram(0);
+	
+	glDetachShader(myProgObj, myFragObj);
+	glDetachShader(myProgObj, myVertObj);
+
+	glDeleteShader(myVertObj);
+	glDeleteShader(myFragObj);
+	glDeleteProgram(myProgObj);
+	
 	SDL_FreeSurface(sprite);
 
 	SDL_Quit();
