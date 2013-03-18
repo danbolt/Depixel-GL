@@ -23,4 +23,4 @@ structs.o:
 	gcc $(compiler) -c structs.c
 
 clean:
-	rm $(objects)
+	rm $(objects) depixel-gl.exe

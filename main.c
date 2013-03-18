@@ -108,9 +108,9 @@ char* readShaderSource(const char* shaderFile)
 	char* buf;
 	
 	stat(shaderFile, &statBuf);
-	buf = (char*) malloc((statBuf.st_size + 1) * sizeof(char));
+	buf = (char*) calloc((int)(statBuf.st_size + 1), sizeof(char));
 	fread(buf, 1, statBuf.st_size, fp);
-	buf[statBuf.st_size] = '\0';
+	buf[(int)(statBuf.st_size)] = '\0';
 	fclose(fp);
 	return buf;
 }
@@ -385,9 +385,14 @@ int curvesHeuristic(int x, int y)
 int recurseSparse(int region[8][8], int x, int y, int team, int origX, int origY)
 {
 	int sum = 0;
-	
+
 	int regionX = x - origX + 3;
 	int regionY = y - origY + 3;
+
+	if (x == -1 || y == -1 || x == sprite->w || y == sprite->h)
+	{
+		return 0;
+	}
 
 	if (region[regionX][regionY] != 0)
 	{
@@ -656,7 +661,7 @@ BOOL init()
 		return FALSE;
 	}
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
-	
+
 	myProgObj = glCreateProgram();
 	myFragObj = glCreateShader(GL_FRAGMENT_SHADER);
 	myVertObj = glCreateShader(GL_VERTEX_SHADER);
@@ -927,6 +932,7 @@ void render()
 	{
 		for (j = 0; j < sprite->h; j++)
 		{
+			glPointSize(adjacencyMatrix[i][j].color.a);
 			glVertex2i(i * 16 + 8, j * 16 + 8);
 		}
 	}
@@ -1023,7 +1029,7 @@ int main(int argc, char* argv[])
 
 		update((double)(currentTickTime - lastTickTime));
 		render();
-		
+
 		lastTickTime = currentTickTime;
 		
 		SDL_Event event;
