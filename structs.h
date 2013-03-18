@@ -55,6 +55,7 @@ typedef struct
 	BOOL SW;
 	BOOL W;
 	BOOL NW;
+	int sparse;
 } AdjacencyCell;
 
 void RGB2YUV(color4* in, yuv3* out);

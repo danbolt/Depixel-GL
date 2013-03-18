@@ -569,6 +569,11 @@ void createGraph()
 			{
 				for (q = j - 1; q <= j + 1; q++)
 				{
+					if (p == -1 || q == -1 || p == sprite->w || q == sprite->h)
+					{
+						continue;
+					}
+
 					if (i == p && j == q)
 					{
 						continue;
@@ -612,6 +617,18 @@ void createGraph()
 			{
 				weighCrossHeuristics(i, j);
 			}
+		}
+	}
+
+	for (i = 0; i < sprite->w; i++)
+	{
+		for (j = 0; j < sprite->h; j++)
+		{
+			int q,p;
+			int region[8][8];
+			for (q = 0; q < 8; q++) { for (p = 0; p < 8; p++) { region[q][p] = 0; } }
+			
+			adjacencyMatrix[i][j].sparse = recurseSparse(region, i, j, -1, i, j);
 		}
 	}
 }
