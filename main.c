@@ -14,7 +14,7 @@
 #define SNES_SCREEN_HEIGHT 480
 
 //uncommenting this may remove the OpenGL 3 pipeline and stop rendering shaders
-//#define SHOW_GRAPH
+#define SHOW_GRAPH
 
 #define GLEW_STATIC
 
@@ -839,16 +839,38 @@ void update(double delta)
 			}
 			if (buddy(x, y, 6) && !buddy(x-1, y, 4))
 			{
-				t.color = adjacencyMatrix[x][y].color;
-				t.a.x = x*16;
-				t.a.y = y*16 + 8;
-				t.b.x = x*16 - 8;
-				t.b.y = y*16 + 16;
-				t.c.x = x*16;
-				t.c.y = y*16 + 16;
-				pushTriangle(&t);
+				if (!buddy(x-1, y, 5) && !buddy(x-1, y, 3) && !buddy(x-1, y, 1) && !buddy(x-1, y, 2) && !buddy(x-1, y, 6))
+				{
+					t.color = adjacencyMatrix[x-1][y].color;
+					t.a.x = x*16;
+					t.a.y = y*16 + 8;
+					t.b.x = x*16;
+					t.b.y = y*16 + 16;
+					t.c.x = x*16 - 8;
+					t.c.y = y*16 + 16;
+					t.type = CONVEX;
+					pushTriangle(&t);
+					t.type = CONCAVE;
+					t.color = adjacencyMatrix[x][y].color;
+					pushTriangle(&t);
+					t.type = TRIANGLE;
+				}
+				else
+				{
+					t.color = adjacencyMatrix[x][y].color;
+					t.a.x = x*16;
+					t.a.y = y*16 + 8;
+					t.b.x = x*16 - 8;
+					t.b.y = y*16 + 16;
+					t.c.x = x*16;
+					t.c.y = y*16 + 16;
+					pushTriangle(&t);
+				}
+
+
 				if (!buddy(x, y+1, 7) && !buddy(x, y+1, 6) && !buddy(x, y+1, 2) && (adjacencyMatrix[x][y+1].sparse < adjacencyMatrix[x][y].sparse))
 				{
+					t.color = adjacencyMatrix[x][y].color;
 					t.a.x = x*16 + 8;
 					t.a.y = y*16 + 16;
 					t.c.x = x*16;
@@ -864,6 +886,7 @@ void update(double delta)
 				}
 				else
 				{
+					t.color = adjacencyMatrix[x][y].color;
 					t.a.x = x*16 + 8;
 					t.a.y = y*16 + 16;
 					t.c.x = x*16;
@@ -891,11 +914,12 @@ void update(double delta)
 				t.color = adjacencyMatrix[x][y].color;
 				t.a.x = x*16 + 16;
 				t.a.y = y*16 + 8;
-				t.b.x = x*16 + 24;
+				t.b.x = x*16 + 16;
 				t.b.y = y*16 + 16;
-				t.c.x = x*16 + 16;
+				t.c.x = x*16 + 24;
 				t.c.y = y*16 + 16;
 				pushTriangle(&t);
+
 				if (!buddy(x, y+1, 3) && !buddy(x, y+1, 4) && !buddy(x, y+1, 0) && (adjacencyMatrix[x][y+1].sparse < adjacencyMatrix[x][y].sparse))
 				{
 					t.a.x = x*16 + 8;
@@ -936,7 +960,7 @@ void update(double delta)
 				pushTriangle(&t);
 			}
 
-			//top left corner
+			//top right corner
 			if (x == 0 || !buddy(x+1, y, 0))
 			{
 				t.color = adjacencyMatrix[x][y].color;
