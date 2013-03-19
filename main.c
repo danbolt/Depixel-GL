@@ -896,13 +896,31 @@ void update(double delta)
 				t.c.x = x*16 + 16;
 				t.c.y = y*16 + 16;
 				pushTriangle(&t);
-				t.a.x = x*16 + 8;
-				t.a.y = y*16 + 16;
-				t.b.x = x*16 + 16;
-				t.b.y = y*16 + 24;
-				t.c.x = x*16 + 16;
-				t.c.y = y*16 + 16;
-				pushTriangle(&t);
+				if (!buddy(x, y+1, 3) && !buddy(x, y+1, 4) && !buddy(x, y+1, 0) && (adjacencyMatrix[x][y+1].sparse < adjacencyMatrix[x][y].sparse))
+				{
+					t.a.x = x*16 + 8;
+					t.a.y = y*16 + 16;
+					t.b.x = x*16 + 16;
+					t.b.y = y*16 + 16;
+					t.c.x = x*16 + 16;
+					t.c.y = y*16 + 24;
+					t.type = CONCAVE;
+					pushTriangle(&t);
+					t.type = CONVEX;
+					t.color = adjacencyMatrix[x][y+1].color;
+					pushTriangle(&t);
+					t.type = TRIANGLE;
+				}
+				else
+				{
+					t.a.x = x*16 + 8;
+					t.a.y = y*16 + 16;
+					t.b.x = x*16 + 16;
+					t.b.y = y*16 + 24;
+					t.c.x = x*16 + 16;
+					t.c.y = y*16 + 16;
+					pushTriangle(&t);
+				}
 			}
 
 			//top left corner
