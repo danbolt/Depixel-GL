@@ -841,6 +841,37 @@ void update(double delta)
 				pushTriangle(&t);
 				t.type = TRIANGLE;
 			}
+			else if (buddy(x, y, 3) && buddy(x, y, 6) && !buddy(x, y, 2) && !buddy(x, y, 1) && !buddy(x, y, 0) && !buddy(x, y, 7))
+			{
+				t.color = adjacencyMatrix[x][y].color;
+				t.a.x = x*16;
+				t.a.y = y*16 + 8;
+				t.b.x = x*16 + 8;
+				t.b.y = y*16 + 16;
+				t.c.x = x*16 + 16;
+				t.c.y = y*16 + 8;
+				pushTriangle(&t);
+				t.color = adjacencyMatrix[x][y].color;
+				t.a.x = x*16;
+				t.a.y = y*16 + 8;
+				t.b.x = x*16 + 16;
+				t.b.y = y*16 + 8;
+				t.c.x = x*16 + 16;
+				t.c.y = y*16;
+				pushTriangle(&t);
+				t.a.x = x*16;
+				t.a.y = y*16 + 8;
+				t.b.x = x*16 + 8;
+				t.b.y = y*16;
+				t.c.x = x*16 + 16;
+				t.c.y = y*16;
+				t.type = CONVEX;
+				pushTriangle(&t);
+				t.type = CONCAVE;
+				t.color = adjacencyMatrix[x][y-1].color;
+				pushTriangle(&t);
+				t.type = TRIANGLE;
+			}
 			else
 			{
 
@@ -1020,14 +1051,17 @@ void update(double delta)
 			//top right corner
 			if (x == 0 || !buddy(x+1, y, 0))
 			{
-				t.color = adjacencyMatrix[x][y].color;
-				t.a.x = x*16 + 16;
-				t.a.y = y*16;
-				t.b.x = x*16 + 8;
-				t.b.y = y*16;
-				t.c.x = x*16 + 16;
-				t.c.y = y*16 + 8;
-				pushTriangle(&t);
+				if ( !(buddy(x, y, 3) && buddy(x, y, 6) && !buddy(x, y, 2) && !buddy(x, y, 1) && !buddy(x, y, 0) && !buddy(x, y, 7)) && TRUE)
+				{
+					t.color = adjacencyMatrix[x][y].color;
+					t.a.x = x*16 + 16;
+					t.a.y = y*16;
+					t.b.x = x*16 + 8;
+					t.b.y = y*16;
+					t.c.x = x*16 + 16;
+					t.c.y = y*16 + 8;
+					pushTriangle(&t);
+				}
 			}
 		}
 	}
