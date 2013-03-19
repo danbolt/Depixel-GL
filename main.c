@@ -13,6 +13,7 @@
 #define SNES_SCREEN_WIDTH 640
 #define SNES_SCREEN_HEIGHT 480
 
+//uncommenting this may remove the OpenGL 3 pipeline and stop rendering shaders
 //#define SHOW_GRAPH
 
 #define GLEW_STATIC
@@ -631,6 +632,16 @@ void createGraph()
 			adjacencyMatrix[i][j].sparse = recurseSparse(region, i, j, -1, i, j);
 		}
 	}
+	
+	// set the scale factor for the image
+	if (sprite->w < sprite->h)
+	{
+		scale = APPLICATION_SCREEN_WIDTH/((sprite->w)*16.f);
+	}
+	else
+	{
+		scale = APPLICATION_SCREEN_HEIGHT/((sprite->h)*16.f);
+	}
 }
 
 BOOL init()
@@ -787,15 +798,6 @@ void update(double delta)
 
 	vertexCount = 0;
 
-	if (sprite->w > sprite->h)
-	{
-		scale = APPLICATION_SCREEN_WIDTH/((sprite->w)*16.f);
-	}
-	else
-	{
-		scale = APPLICATION_SCREEN_HEIGHT/((sprite->h)*16.f);
-	}
-
 	translateX = ((APPLICATION_SCREEN_WIDTH - (sprite->w)*16.f))/APPLICATION_SCREEN_WIDTH;
 	translateY = -1.f * ((APPLICATION_SCREEN_HEIGHT - (sprite->h)*16.f))/APPLICATION_SCREEN_HEIGHT;
 
@@ -822,7 +824,7 @@ void update(double delta)
 			t.c.x = x*16 + 8;
 			t.c.y = y*16 + 16;
 			pushTriangle(&t);
-			
+
 			//bottom left corner
 			if (x == 0 || !buddy(x-1, y, 4))
 			{
@@ -845,13 +847,31 @@ void update(double delta)
 				t.c.x = x*16;
 				t.c.y = y*16 + 16;
 				pushTriangle(&t);
-				t.a.x = x*16 + 8;
-				t.a.y = y*16 + 16;
-				t.b.x = x*16;
-				t.b.y = y*16 + 24;
-				t.c.x = x*16;
-				t.c.y = y*16 + 16;
-				pushTriangle(&t);
+				if (!buddy(x, y+1, 7) && !buddy(x, y+1, 6) && !buddy(x, y+1, 2) && (adjacencyMatrix[x][y+1].sparse < adjacencyMatrix[x][y].sparse))
+				{
+					t.a.x = x*16 + 8;
+					t.a.y = y*16 + 16;
+					t.c.x = x*16;
+					t.c.y = y*16 + 24;
+					t.b.x = x*16;
+					t.b.y = y*16 + 16;
+					t.type = CONCAVE;
+					pushTriangle(&t);
+					t.type = CONVEX;
+					t.color = adjacencyMatrix[x][y+1].color;
+					pushTriangle(&t);
+					t.type = TRIANGLE;
+				}
+				else
+				{
+					t.a.x = x*16 + 8;
+					t.a.y = y*16 + 16;
+					t.c.x = x*16;
+					t.c.y = y*16 + 24;
+					t.b.x = x*16;
+					t.b.y = y*16 + 16;
+					pushTriangle(&t);
+				}
 			}
 
 			//bottom right corner
