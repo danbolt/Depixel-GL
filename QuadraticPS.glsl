@@ -36,6 +36,15 @@ void main (void)
           alpha = 0;
      }
      
+     if (alpha < 0.5)
+     {
+          alpha = 0;
+     }
+     else if (alpha > 0.5)
+     {
+          alpha = 1;
+     }
+
      gl_FragColor = gl_TexCoord[1];
      gl_FragColor.w = alpha;
 }
