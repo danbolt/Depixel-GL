@@ -931,6 +931,7 @@ void update(double delta)
 				t.color = adjacencyMatrix[x-1][y].color;
 				pushTriangle(&t);
 				t.type = TRIANGLE;
+				//pushTriangle(&t);
 			}
 			else if (buddy(x, y, 7) && buddy (x, y, 2) && !buddy(x, y, 3) && !buddy(x, y, 4) && !buddy(x, y, 5) && !buddy(x, y, 6))
 			{
@@ -1197,7 +1198,7 @@ void update(double delta)
 			//top left corner
 			if (x == 0 || !buddy(x-1, y, 2))
 			{
-				if ( !(buddy(x, y, 7) && buddy(x, y, 4) && !buddy(x, y, 0) && !buddy(x, y, 1) && !buddy(x, y, 2) && !buddy(x, y, 3)) && TRUE)
+				if ( !(buddy(x, y, 7) && buddy(x, y, 4) && !buddy(x, y, 0) && !buddy(x, y, 1) && !buddy(x, y, 2) && !buddy(x, y, 3)) && !(buddy(x, y, 2) && buddy(x, y, 5) && !buddy(x, y, 6) && !buddy(x, y, 7) && !buddy(x, y, 0) && !buddy(x, y, 1)))
 				{
 					t.color = adjacencyMatrix[x][y].color;
 					t.a.x = x*16;
