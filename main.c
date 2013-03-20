@@ -1,4 +1,4 @@
-#define BOOL Uint8
+#define DAN_BOOL Uint8
 #define TRUE 1
 #define FALSE 0
 
@@ -28,6 +28,8 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
+#include <windows.h>
+
 #include "structs.h"
 #include "pixel.h"
 
@@ -39,7 +41,7 @@ Uint32 lastTickTime;
 
 SDL_Surface* sprite;
 
-BOOL doneWindow = FALSE;
+DAN_BOOL doneWindow = FALSE;
 
 int vertexCount;
 GLfloat* vertexArray = NULL;
@@ -116,7 +118,7 @@ char* readShaderSource(const char* shaderFile)
 	return buf;
 }
 
-void setCellAdjacency(int xa, int ya, int xb, int yb, BOOL value)
+void setCellAdjacency(int xa, int ya, int xb, int yb, DAN_BOOL value)
 {
 	if (xa - xb == 1)
 	{
@@ -177,7 +179,7 @@ void setCellAdjacency(int xa, int ya, int xb, int yb, BOOL value)
 	}
 }
 
-BOOL getCellAdjacency(int xa, int ya, int xb, int yb)
+DAN_BOOL getCellAdjacency(int xa, int ya, int xb, int yb)
 {
 	if (xa - xb == 1)
 	{
@@ -249,7 +251,7 @@ BOOL getCellAdjacency(int xa, int ya, int xb, int yb)
 }
 
 //this is a wrapper method for getCellAdjacency(); it's written to interface with Johannes Kopf's weird if/else code
-BOOL buddy(int x, int y, int dir)
+DAN_BOOL buddy(int x, int y, int dir)
 {
 	switch (dir)
 	{
@@ -644,7 +646,7 @@ void createGraph()
 	}
 }
 
-BOOL init()
+DAN_BOOL init()
 {
 	//freopen( "CON", "wt", stdout );
 	//freopen( "CON", "wt", stderr );
@@ -1353,8 +1355,10 @@ int main(int argc, char* argv[])
 		perror("error loading test TIF");
 		return 1;
 	}
-	
+
 	createGraph();
+	
+	MessageBox(0,"Hello, Windows","MinGW Test Program",MB_OK);
 	
 	while (!doneWindow)
 	{

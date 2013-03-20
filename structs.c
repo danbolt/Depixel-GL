@@ -21,7 +21,7 @@ void RGB2YUV(color4* in, yuv3* out)
 	out->v = V_MAX * ((in->r - out->y) / (1.f - W_R));
 }
 
-BOOL arePixelColorsAlike(color4 node1, color4 node2)
+DAN_BOOL arePixelColorsAlike(color4 node1, color4 node2)
 {
 	const GLfloat yDiffMin = 48.f/255.f;
 	const GLfloat uDiffMin = 7./255.f;

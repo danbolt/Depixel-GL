@@ -2,7 +2,7 @@
 #define GLEW_STATIC
 #include "glew.h"
 
-#define BOOL Uint8
+#define DAN_BOOL Uint8
 #define TRUE 1
 #define FALSE 0
 
@@ -47,17 +47,17 @@ typedef struct
 typedef struct
 {
 	color4 color;
-	BOOL N;
-	BOOL NE;
-	BOOL E;
-	BOOL SE;
-	BOOL S;
-	BOOL SW;
-	BOOL W;
-	BOOL NW;
+	DAN_BOOL N;
+	DAN_BOOL NE;
+	DAN_BOOL E;
+	DAN_BOOL SE;
+	DAN_BOOL S;
+	DAN_BOOL SW;
+	DAN_BOOL W;
+	DAN_BOOL NW;
 	int sparse;
 } AdjacencyCell;
 
 void RGB2YUV(color4* in, yuv3* out);
 
-BOOL arePixelColorsAlike(color4 node1, color4 node2);
+DAN_BOOL arePixelColorsAlike(color4 node1, color4 node2);
