@@ -1366,32 +1366,32 @@ int main(int argc, char* argv[])
 	HDC emuWinContext = GetWindowDC(emuWin);
 	
 	HDC hdcMem = CreateCompatibleDC(emuWinContext);
-	HBITMAP hdcMap = CreateCompatibleBitmap(hdcMem, 256, 244);
+	HBITMAP hdcMap = CreateCompatibleBitmap(emuWinContext, 256, 244);
 	if (hdcMap == NULL)
 	{
 		fprintf(stderr, "no bitmap!\n");
 		return 1;
 	}
-	
-	RECT rt;
 
 	while (!doneWindow)
 	{
 		int i, j;
 
 		Uint32 currentTickTime = SDL_GetTicks();
+		
+		HBITMAP hbmOld = SelectObject(hdcMem, hdcMap);
 
-		if (BitBlt(emuWinContext, 0, 0, 256, 224, hdcMem, 0, 0, SRCCOPY) == 0)
+		if (BitBlt(hdcMem, 0, 0, 256, 224, emuWinContext, 0, 0, SRCCOPY) == 0)
 		{
 			printf("problem blitting\n");
 		}
-		
+
 		for (i = 0; i < 256; i++)
 		{
 			for(j = 0; j < 224; j++)
 			{
-				COLORREF px = GetPixel(emuWinContext, i, j);
-				
+				COLORREF px = GetPixel(hdcMem, i, j);
+
 				put_pixel32(sprite, i, j, SDL_MapRGB(sprite->format,  GetRValue(px),  GetGValue(px),  GetBValue(px)));
 			}
 		}
