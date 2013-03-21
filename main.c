@@ -1356,13 +1356,47 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	createGraph();
+	HWND emuWin = FindWindow(NULL, "ZSNES");
+	if (emuWin == NULL)
+	{
+		fprintf(stderr, "No ZSNES window found\n");
+		return 1;
+	}
+
+	HDC emuWinContext = GetWindowDC(emuWin);
 	
-	MessageBox(0,"Hello, Windows","MinGW Test Program",MB_OK);
+	HDC hdcMem = CreateCompatibleDC(emuWinContext);
+	HBITMAP hdcMap = CreateCompatibleBitmap(hdcMem, 256, 244);
+	if (hdcMap == NULL)
+	{
+		fprintf(stderr, "no bitmap!\n");
+		return 1;
+	}
 	
+	RECT rt;
+
 	while (!doneWindow)
 	{
+		int i, j;
+
 		Uint32 currentTickTime = SDL_GetTicks();
+
+		if (BitBlt(emuWinContext, 0, 0, 256, 224, hdcMem, 0, 0, SRCCOPY) == 0)
+		{
+			printf("problem blitting\n");
+		}
+		
+		for (i = 0; i < 256; i++)
+		{
+			for(j = 0; j < 224; j++)
+			{
+				COLORREF px = GetPixel(emuWinContext, i, j);
+				
+				put_pixel32(sprite, i, j, SDL_MapRGB(sprite->format,  GetRValue(px),  GetGValue(px),  GetBValue(px)));
+			}
+		}
+
+		createGraph();
 
 		update((double)(currentTickTime - lastTickTime));
 		render();
