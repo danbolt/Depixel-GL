@@ -1,3 +1,4 @@
+#include <stdint.h>
 
 #define GLEW_STATIC
 #include "glew.h"
@@ -56,6 +57,7 @@ typedef struct
 	DAN_BOOL W;
 	DAN_BOOL NW;
 	int sparse;
+	int adjacencyByte;
 } AdjacencyCell;
 
 void RGB2YUV(color4* in, yuv3* out);

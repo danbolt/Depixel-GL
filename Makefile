@@ -1,4 +1,4 @@
-compiler = -Wall -g
+compiler = -Wall -pg
 objects = glew.o main.o pixel.o structs.o
 
 ifeq ($(box), win32)
@@ -12,7 +12,7 @@ ifeq ($(build), release)
 endif
 
 all: $(objects)
-	gcc $(objects) -o depixel-gl.exe $(libs)
+	gcc $(compiler) $(objects) -o depixel-gl.exe $(libs)
      
 main.o:
 	gcc $(compiler) -c main.c

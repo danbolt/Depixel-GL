@@ -623,6 +623,7 @@ void createGraph()
 		}
 	}
 
+        /*
 	for (i = 0; i < sprite->w; i++)
 	{
 		for (j = 0; j < sprite->h; j++)
@@ -630,10 +631,20 @@ void createGraph()
 			int q,p;
 			int region[8][8];
 			for (q = 0; q < 8; q++) { for (p = 0; p < 8; p++) { region[q][p] = 0; } }
-			
-			adjacencyMatrix[i][j].sparse = recurseSparse(region, i, j, -1, i, j);
+
+			adjacencyMatrix[i][j].adjacencyByte = 0;
+			int flag = 1;
+			for (q = 0; q <= 7; q++)
+			{
+				if (buddy(i, j, q))
+				{
+					adjacencyMatrix[i][j].adjacencyByte |= flag;
+				}
+
+				flag <<= 1;
+			}
 		}
-	}
+	}     */
 	
 	// set the scale factor for the image
 	if (sprite->w < sprite->h)
@@ -1093,7 +1104,7 @@ void update(double delta)
 				}
 
 
-				if (!buddy(x, y+1, 7) && !buddy(x, y+1, 6) && !buddy(x, y+1, 2) && (adjacencyMatrix[x][y+1].sparse < adjacencyMatrix[x][y].sparse))
+				if (!buddy(x, y+1, 7) && !buddy(x, y+1, 6) && !buddy(x, y+1, 2))
 				{
 					t.color = adjacencyMatrix[x][y].color;
 					t.a.x = x*16 + 8;
@@ -1170,7 +1181,7 @@ void update(double delta)
 					pushTriangle(&t);
 				}
 
-				if (!buddy(x, y+1, 3) && !buddy(x, y+1, 4) && !buddy(x, y+1, 0) && (adjacencyMatrix[x][y+1].sparse < adjacencyMatrix[x][y].sparse))
+				if (!buddy(x, y+1, 3) && !buddy(x, y+1, 4) && !buddy(x, y+1, 0))
 				{
 					t.a.x = x*16 + 8;
 					t.a.y = y*16 + 16;
@@ -1376,8 +1387,8 @@ int main(int argc, char* argv[])
 		int i, j;
 
 		Uint32 currentTickTime = SDL_GetTicks();
-		
-		HBITMAP hbmOld = SelectObject(hdcMem, hdcMap);
+
+		SelectObject(hdcMem, hdcMap);
 
 		if (BitBlt(hdcMem, 0, 0, 256, 224, emuWinContext, 0, 0, SRCCOPY) == 0)
 		{
