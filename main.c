@@ -1234,8 +1234,6 @@ void update(double delta)
 
 void render()
 {
-	int i,j;
-
 	glUniform1f(scaleUniform, scale);
 	glUniform2f(translateUniform, translateX, translateY);
 

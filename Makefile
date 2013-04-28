@@ -7,6 +7,10 @@ else
 	libs = -lSDL -lSDL_ttf -lSDL_image -lSDL_mixer -lGL -lGLU
 endif
 
+ifeq ($(build), release)
+	compiler = -Wall -O3
+endif
+
 all: $(objects)
 	gcc $(objects) -o depixel-gl.exe $(libs)
      
